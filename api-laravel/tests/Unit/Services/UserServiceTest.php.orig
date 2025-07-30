@@ -1,0 +1,316 @@
+<?php
+
+namespace Tests\Unit\Services;
+
+use Codeception\Stub\Expected;
+use Codeception\Test\Unit;
+use Ebs\Model\Subscriber;
+use Ice\Model\User;
+use Lan\DataTypes\EbsCarbon;
+use Lan\DataTypes\Http\RequestResult\Error\CheckIp\IpNotFound;
+use Lan\DataTypes\Http\RequestResult\Error\CustomError;
+use Lan\DataTypes\Http\RequestResult\Error\LogOut\LogOutError;
+use Lan\DataTypes\Http\RequestResult\Success\GenericSuccessResult;
+use Lan\DTOs\Auth\Requests\CheckIpRequestDTO;
+use Lan\DTOs\Auth\Requests\LoginRequestDTO;
+use Lan\DTOs\Auth\Responses\UserResponseDTO;
+use Lan\Repositories\Ice\UserRepository;
+use Lan\Services\Security\SecurityService;
+use Lan\Services\UserService;
+use Tests\Support\UnitTester;
+
+class UserServiceTest extends Unit
+{
+    protected UnitTester $tester;
+
+    // tests
+    public function testSuccessfulLogin()
+    {
+        $loginRequestDTO = new LoginRequestDTO('test@example.com', 'password');
+
+        $securityServiceMock = $this->make(SecurityService::class, [
+            'call' => function () {
+                return ['code' => 200, 'jwt' => [
+                    'access_token' => 'test_token',
+                    'data' => [
+                        'payload' => [
+                            'user' => [
+                                'id' => 1,
+                                'surname' => 'Test',
+                                'name' => 'User',
+                                'patronymic' => '',
+                                'email' => 'test@example.com'
+                            ]
+                        ]
+                    ]
+                ]
+                ];
+            },
+            'getSubscriber' => function () {
+                return $this->make(Subscriber::class, [
+                    'get' => function ($key) {
+                        if ($key === '/name') {
+                            return 'Test Subscriber';
+                        }
+
+                        return null;
+                    },
+                    'getPk' => 1,
+                    'getSubscriberName' => 'Test Subscriber',
+                ]);
+            },
+            'getUser' => function () {
+                return User::create([
+                    "\pk" => 11534980,
+                ]);
+            },
+            'getUserExpiredDate' => function () {
+                return '2024-07-18 11:06:35';
+            },
+        ]);
+
+        $userRepositoryMock = $this->make(UserRepository::class, [
+            'markAppAsUsedByUser' => Expected::once(function ($userId) {
+                // Заглушка на метод, чтобы не выполнять запрос к реальной БД
+            }),
+        ]);
+
+        $expectedUserDTO = UserResponseDTO::create(
+            id: 1,
+            xAuthToken: 'test_token',
+            name: 'Test User ',
+            email: 'test@example.com',
+            subscriber: 'Test Subscriber',
+            subscriptionEndDate: EbsCarbon::parse('2024-07-18 11:06:35')
+        );
+
+        $userService = new UserService(
+            securityService: $securityServiceMock,
+            userRepository: $userRepositoryMock);
+
+        $result = $userService->logIn($loginRequestDTO);
+
+        $this->assertEquals(200, $result->getStatus()->getStatusCode());
+        $this->assertEquals($expectedUserDTO, $result->getUser());
+    }
+
+    public function testFailedLoginWithWrongPassword()
+    {
+        $loginRequestDTO = new LoginRequestDTO('test@example.com', 'wrong_password');
+
+        $securityServiceMock = $this->make(SecurityService::class, [
+            'call' => function () {
+                return ['code' => 401];
+            },
+        ]);
+
+        $userRepositoryMock = $this->make(UserRepository::class);
+
+        $userService = new UserService(
+            securityService: $securityServiceMock,
+            userRepository: $userRepositoryMock
+        );
+
+        $result = $userService->logIn($loginRequestDTO);
+
+        $this->assertEquals(401, $result->getStatus()->getStatusCode());
+        $this->assertTrue($result->getUser()->isEmpty());
+    }
+
+    public function testFailedLoginWithAccountNonFound()
+    {
+        $loginRequestDTO = new LoginRequestDTO('nonexistent@example.com', 'password');
+
+        $securityServiceMock = $this->make(SecurityService::class, [
+            'call' => function () {
+                return [
+                    'code' => 401
+                ];
+            },
+        ]);
+
+        $userRepositoryMock = $this->make(UserRepository::class, []);
+
+        $userService = new UserService(
+            securityService: $securityServiceMock,
+            userRepository: $userRepositoryMock
+        );
+
+        $result = $userService->logIn($loginRequestDTO);
+
+        $this->assertEquals(401, $result->getStatus()->getStatusCode());
+        $this->assertTrue($result->getUser()->isEmpty());
+    }
+
+    public function testFailedLoginWithSecurityUserNotFoundException()
+    {
+        $loginRequestDTO = new LoginRequestDTO('nonexistent@example.com', 'password');
+
+        $securityServiceMock = $this->make(SecurityService::class, [
+            'call' => function () {
+                throw new \Ice\Exception\Security_User_NotFound('User not found', [], null, null, null, 0);
+            },
+        ]);
+
+        $userRepositoryMock = $this->make(UserRepository::class, []);
+
+        $userService = new UserService(
+            securityService: $securityServiceMock,
+            userRepository: $userRepositoryMock
+        );
+
+        $result = $userService->logIn($loginRequestDTO);
+
+        $this->assertEquals(401, $result->getStatus()->getStatusCode());
+        $this->assertTrue($result->getUser()->isEmpty());
+    }
+
+    public function testFailedLoginWithCustomError()
+    {
+        $loginRequestDTO = new LoginRequestDTO('test@example.com', 'password');
+
+        $securityServiceMock = $this->make(SecurityService::class, [
+            'call' => function () {
+                return [
+                    'code' => 500,
+                    'error' => 'Internal Server Error'
+                ];
+            },
+        ]);
+
+        $userRepositoryMock = $this->make(UserRepository::class, []);
+
+        $userService = new UserService(
+            securityService: $securityServiceMock,
+            userRepository: $userRepositoryMock
+        );
+
+        $result = $userService->logIn($loginRequestDTO);
+
+        $this->assertEquals(500, $result->getStatus()->getStatusCode());
+        $this->assertEquals('Internal Server Error', $result->getStatus()->getMessage());
+        $this->assertTrue($result->getUser()->isEmpty());
+    }
+
+    public function testLogOut()
+    {
+        $securityServiceMock = $this->make(SecurityService::class, [
+            'call' => function () {
+                return ['code' => 200];
+            },
+        ]);
+
+        $userRepositoryMock = $this->make(UserRepository::class, []);
+
+        $userService = new UserService(
+            securityService: $securityServiceMock,
+            userRepository: $userRepositoryMock
+        );
+
+        $status = $userService->logOut();
+        $this->assertEquals(new GenericSuccessResult(), $status);
+    }
+
+    public function testFailedLogOutWithCodeAndStatusFromSecurityCall()
+    {
+        $securityServiceMock = $this->make(SecurityService::class, [
+            'call' => function () {
+                return [
+                    'code' => 400,
+                    'error' => 'Bad Request'
+                ];
+            },
+        ]);
+
+        $userRepositoryMock = $this->make(UserRepository::class, []);
+
+        $userService = new UserService(
+            securityService: $securityServiceMock,
+            userRepository: $userRepositoryMock
+        );
+
+        $status = $userService->logOut();
+        $this->assertInstanceOf(CustomError::class, $status);
+        $this->assertEquals(400, $status->getStatusCode());
+        $this->assertEquals('Bad Request', $status->getMessage());
+    }
+
+    public function testFailedLogOutWithLogOutError()
+    {
+        $securityServiceMock = $this->make(SecurityService::class, [
+            'call' => function () {
+                return [
+                    'code' => 500,
+                ];
+            },
+        ]);
+
+        $userRepositoryMock = $this->make(UserRepository::class, []);
+
+        $userService = new UserService(
+            securityService: $securityServiceMock,
+            userRepository: $userRepositoryMock
+        );
+
+        $status = $userService->logOut();
+        $this->assertEquals(LogOutError::create(), $status);
+    }
+
+    public function testGetSubscriberFromIpWithValidIp()
+    {
+        $requestDTO = new CheckIpRequestDTO(
+            ipAddress: '90.90.90.90'
+        );
+
+        $userRepositoryMock = $this->make(UserRepository::class, [
+            'getSubscriberFromIp' => Expected::once(function () use ($requestDTO) {
+                return $this->make(Subscriber::class, [
+                    'get' => Expected::once(function ($key) {
+                        if ($key === '/name') {
+                            return 'Test Subscriber';
+                        }
+                        return null;
+                    }),
+                    'getPk' => Expected::once(function () {
+                        return 1;
+                    }),
+                ]);
+            }),
+        ]);
+
+        $securityServiceMock = $this->make(SecurityService::class);
+
+        $userService = new UserService(
+            securityService: $securityServiceMock,
+            userRepository: $userRepositoryMock
+        );
+
+        $responseDTO = $userService->getSubscriberFromIp($requestDTO);
+        $this->assertEquals(new GenericSuccessResult(), $responseDTO->getStatus());
+        $this->assertEquals('Test Subscriber', $responseDTO->getSubscriberName());
+    }
+
+    public function testGetSubscriberFromIpWithNonValidIp()
+    {
+        $requestDTO = new CheckIpRequestDTO(
+            ipAddress: '80.80.80.80'
+        );
+
+        $userRepositoryMock = $this->make(UserRepository::class, [
+            'getSubscriberFromIp' => Expected::once(function () use ($requestDTO) {
+                return Subscriber::create();
+            }),
+        ]);
+
+        $securityServiceMock = $this->make(SecurityService::class);
+
+        $userService = new UserService(
+            securityService: $securityServiceMock,
+            userRepository: $userRepositoryMock
+        );
+
+        $responseDTO = $userService->getSubscriberFromIp($requestDTO);
+        $this->assertEquals(new IpNotFound(), $responseDTO->getStatus());
+        $this->assertEquals('', $responseDTO->getSubscriberName());
+    }
+}

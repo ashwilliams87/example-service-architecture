@@ -1,0 +1,15 @@
+# Codeception Test Suite Configuration
+#
+# Suite for unit or integration tests.
+
+actor: UnitTester
+modules:
+    enabled:
+      - Laravel
+    config:
+      - Laravel:
+          environment_file: .env.testing
+
+step_decorators: ~
+
+bootstrap: _unit_bootstrap.php

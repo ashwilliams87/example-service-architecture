@@ -1,0 +1,64 @@
+<?php
+
+namespace App\Http\Controllers\Ebs;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Category\CategoryListRequest;
+use App\Http\Requests\Category\SubCategoryListRequest;
+use App\Models\Types\DocumentType;
+use Lan\Services\Contracts\CategoryServiceInterface;
+use Lan\Services\Contracts\Http\Response\ResponseServiceInterface;
+use Lan\Transformers\Contracts\Http\Category\CategoryListPaginatedTransformer;
+use Lan\Transformers\Contracts\Http\Category\SubCategoryListPaginatedTransformer;
+
+class CategoryController extends Controller
+{
+    public function __construct(
+        public CategoryServiceInterface $categoryService,
+        public ResponseServiceInterface $responseService
+    )
+    {
+    }
+
+    public function categoryList(
+        CategoryListRequest $request,
+        CategoryListPaginatedTransformer $paginatedTransformer
+    )
+    {
+        // todo: insertSubscriberVisit();
+        $requestDTO = $request->toDTO();
+
+        switch ($requestDTO->getType()){
+            case (string) DocumentType::BOOK:
+                $paginatedDTO = $this->categoryService->getBookCategories($requestDTO);
+                break;
+            case (string) DocumentType::JOURNAL:
+                $paginatedDTO = $this->categoryService->getJournalCategories($requestDTO);
+                break;
+            default:
+                $paginatedDTO = $this->categoryService->getAllCategories($requestDTO);
+                break;
+        }
+
+        $data = $paginatedTransformer->setPaginatedDto($paginatedDTO)
+            ->toArray();
+
+        return $this->responseService->makeSuccessResponseWithArray(data: $data);
+    }
+
+
+    public function SubCategoryList(
+        SubCategoryListRequest           $request,
+        SubCategoryListPaginatedTransformer $paginatedTransformer
+    )
+    {
+        // todo: insertSubscriberVisit();
+        $paginatedDTO = $this->categoryService->getSubCategories($request->toDTO());
+
+        $data = $paginatedTransformer->setPaginatedDto($paginatedDTO)
+            ->toArray();
+
+        return $this->responseService->makeSuccessResponseWithArray(data: $data);
+    }
+
+}

@@ -1,0 +1,72 @@
+<?php
+
+use App\Http\Controllers\Ebs\AuthController;
+use App\Http\Controllers\Ebs\AuthorController;
+use App\Http\Controllers\Ebs\BookController;
+use App\Http\Controllers\Ebs\CategoryController;
+use App\Http\Controllers\Ebs\JournalController;
+use App\Http\Controllers\Ebs\PublisherController;
+use App\Http\Controllers\Ebs\SearchController;
+use App\Http\Controllers\Ebs\StatController;
+use App\Http\Controllers\Ebs\SyncController;
+use App\Http\Middleware\CopyTokenFromHeaderToCookie;
+use App\Http\Middleware\EnsureUserAuthenticated;
+use App\Http\Middleware\MiddleTest;
+use Illuminate\Support\Facades\Route;
+
+Route::prefix('1.1')
+    ->middleware([
+        MiddleTest::class,
+        CopyTokenFromHeaderToCookie::class,
+        EnsureUserAuthenticated::class,
+    ])
+    ->group(function () {
+        Route::get('/books', [BookController::class, 'bookList']);
+        Route::prefix('/book')
+            ->group(function () {
+                Route::get('/', [BookController::class, 'bookCard']);
+                Route::get('/key', [BookController::class, 'bookCreateKey']);
+                Route::get('/meta', [BookController::class, 'bookMeta']);
+                Route::get('/pdf', [BookController::class, 'downloadPdf']);
+                Route::get('/epub', [BookController::class, 'downloadEpub']);
+                Route::get('/text', [BookController::class, 'downloadText']);
+                Route::get('/audio', [BookController::class, 'downloadAudio']);
+            });
+
+        Route::prefix('/article')
+            ->group(function () {
+                Route::get('/key', [JournalController::class, 'articleCreateKey']);
+                Route::get('/meta', [JournalController::class, 'articleMeta']);
+                Route::get('/pdf', [JournalController::class, 'downloadPdf']);
+                Route::get('/epub', [JournalController::class, 'downloadEpub']);
+                Route::get('/text', [JournalController::class, 'downloadText']);
+                Route::get('/audio', [JournalController::class, 'downloadAudio']);
+            });
+        Route::get('/journals', [JournalController::class, 'journalList']);
+        Route::get('/articles', [JournalController::class, 'articleList']);
+        Route::get('/issue', [JournalController::class, 'journalIssueCard']);
+
+        Route::get('/authors', [AuthorController::class, 'authorCharacterMap']);
+        Route::get('/publishers', [PublisherController::class, 'PublisherList']);
+	Route::get('/categories', [CategoryController::class, 'categoryList']);
+        Route::get('/subcategories', [CategoryController::class, 'SubCategoryList']);
+        Route::post('/sync/all', [SyncController::class, 'syncAll']);
+        Route::post('/stat/read', [StatController::class, 'statRead']);
+
+        Route::get('/search', [SearchController::class, 'searchAll']);
+        Route::get('/search/books', [SearchController::class, 'searchByDocumentType']);
+        Route::get('/search/journals', [SearchController::class, 'searchByDocumentType']);
+        Route::get('/search/articles', [SearchController::class, 'searchByDocumentType']);
+
+        Route::prefix('users')
+            ->withoutMiddleware(EnsureUserAuthenticated::class)
+            ->group(function () {
+                Route::post('current', [AuthController::class, 'logIn']);
+                Route::get('check_ip', [AuthController::class, 'checkIp']);
+                Route::delete('current', [AuthController::class, 'logOut']);
+                Route::delete('current/social', [AuthController::class, 'logOut']);
+                Route::post('recovery', [AuthController::class, 'recoverPassword']);
+                Route::get('check_invite', [AuthController::class, 'checkInvite']);
+            });
+    });
+

@@ -1,0 +1,39 @@
+[09:39:51 1730799591.3616] 
+ Ice\Exception\Error: Declaration of Lan\DTOs\Collection\ListDTO::getItemClass() must be compatible with Lan\Contracts\DTOs\Collection\LanDTOListInterface::getItemClass(): string [peak: 36 MB]  
+ /var/www/html/api-laravel/Lan/DTOs/Collection/ListDTO.php:63  
+ 
+#0 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:276  
+	Ice\Core\Logger->createException('Declaration of ...', '/var/www/html/a...', 63, NULL, Array, 64) 
+#1 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:247  
+	Ice\Core\Logger->error('Declaration of ...', '/var/www/html/a...', 63, NULL, Array, 64) 
+#2 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:197  
+	Ice\Core\Logger::errorHandler:64, 'Declaration of ...', '/var/www/html/a...', 63, Array) 
+#3 [internal function]: Ice\Core\Logger::shutdownHandler() 
+#4 {main} 
+ 
+[09:40:04 1730799604.1659] 
+ Ice\Exception\Error: Declaration of Lan\DTOs\Collection\ListDTO::getItemClass() must be compatible with Lan\Contracts\DTOs\Collection\LanDTOListInterface::getItemClass(): string [peak: 36 MB]  
+ /var/www/html/api-laravel/Lan/DTOs/Collection/ListDTO.php:63  
+ 
+#0 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:276  
+	Ice\Core\Logger->createException('Declaration of ...', '/var/www/html/a...', 63, NULL, Array, 64) 
+#1 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:247  
+	Ice\Core\Logger->error('Declaration of ...', '/var/www/html/a...', 63, NULL, Array, 64) 
+#2 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:197  
+	Ice\Core\Logger::errorHandler:64, 'Declaration of ...', '/var/www/html/a...', 63, Array) 
+#3 [internal function]: Ice\Core\Logger::shutdownHandler() 
+#4 {main} 
+ 
+[09:40:20 1730799620.5578] 
+ Ice\Exception\Error: Declaration of Lan\DTOs\Collection\ListDTO::getItemClass() must be compatible with Lan\Contracts\DTOs\Collection\LanDTOListInterface::getItemClass(): string [peak: 36 MB]  
+ /var/www/html/api-laravel/Lan/DTOs/Collection/ListDTO.php:63  
+ 
+#0 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:276  
+	Ice\Core\Logger->createException('Declaration of ...', '/var/www/html/a...', 63, NULL, Array, 64) 
+#1 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:247  
+	Ice\Core\Logger->error('Declaration of ...', '/var/www/html/a...', 63, NULL, Array, 64) 
+#2 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:197  
+	Ice\Core\Logger::errorHandler:64, 'Declaration of ...', '/var/www/html/a...', 63, Array) 
+#3 [internal function]: Ice\Core\Logger::shutdownHandler() 
+#4 {main} 
+ 

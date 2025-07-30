@@ -1,0 +1,42 @@
+<?php
+
+namespace Tests\Unit\Transformers;
+
+use Codeception\Test\Unit;
+use Lan\DTOs\Search\Responses\PaginatedSearchJournalsResponseDTO;
+use Lan\DTOs\Search\Responses\SearchJournalsResponseDTO;
+use Lan\Transformers\Contracts\Http\Search\SearchJournalPaginatedTransformer;
+use Lan\Transformers\Contracts\Http\Search\SearchJournalsTransformer;
+
+class SearchJournalsPaginatedTransformerTest extends Unit
+{
+    public function testCreateTransformer(): void
+    {
+        $transformer = SearchJournalPaginatedTransformer::create();
+        $this->assertInstanceOf(SearchJournalPaginatedTransformer::class, $transformer);
+    }
+
+    public function testToArray(): void{
+        $paginatedTransformer = SearchJournalPaginatedTransformer::create();
+        $expectedTransformationResult = [];
+        $searchResultDTOs = [];
+        for ($i = 0; $i < 10; $i++) {
+            $searchResultDTOs[] = SearchJournalsResponseDTO::create(
+                id: $i,
+                name: 'name' . $i,
+                word: 'word' . $i,
+                snippet: 'snippet' . $i,
+                available: true,
+                publisher: 'publisher' . $i,
+                coverUrl: "https://ebs.landev.ru/img/cover/issue/{$i}.jpg",
+            );
+
+            $searchBooksTransformer = new SearchJournalsTransformer();
+            $expectedTransformationResult[] = $searchBooksTransformer->toArray($searchResultDTOs[$i]);
+        }
+
+        $paginatedDto = new PaginatedSearchJournalsResponseDTO(dtoItems: $searchResultDTOs);
+        $transformResult = $paginatedTransformer->setPaginatedDto($paginatedDto)->toArray();
+        $this->assertEquals($expectedTransformationResult, $transformResult);
+    }
+}

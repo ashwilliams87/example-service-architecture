@@ -1,0 +1,115 @@
+<?php
+
+namespace Lan\Services;
+
+use App\Models\Types\DocumentType;
+use Lan\DTOs\Category\Requests\CategoryListRequestDTO;
+use Lan\DTOs\Category\Requests\SubCategoryListRequestDTO;
+use Lan\DTOs\Category\Responses\CategoryListResponseDTO;
+use Lan\DTOs\Category\Responses\PaginatedCategoryListResponseDTO;
+use Lan\DTOs\Category\Responses\PaginatedSubCategoryListResponseDTO;
+use Lan\DTOs\Category\Responses\SubCategoryListResponseDTO;
+use Lan\Repositories\Contracts\CategoryRepositoryInterface;
+use Lan\Services\Contracts\CategoryServiceInterface;
+
+class CategoryService implements CategoryServiceInterface
+{
+    public function __construct(
+        private CategoryRepositoryInterface $categoryRepository,
+    )
+    {
+
+    }
+
+    public function getBookCategories(CategoryListRequestDTO $requestDTO): PaginatedCategoryListResponseDTO
+    {
+        // todo: реализовать кэширование
+        $rows = $this->categoryRepository->getBookCategories();
+
+        if($requestDTO->getOffset() && $requestDTO->getLimit()){
+            $categories = array_slice($rows, $requestDTO->getOffset(), $requestDTO->getLimit());
+        } else {
+            $categories = $rows;
+        }
+
+        $categoryDTOs = [];
+        foreach ($categories as $category){
+            $categoryDTOs[] = new CategoryListResponseDTO(
+                id: $category->id,
+                title: $category->title,
+                active: true
+            );
+        }
+
+        return new PaginatedCategoryListResponseDTO(dtoItems: $categoryDTOs);
+    }
+
+    public function getJournalCategories(CategoryListRequestDTO $requestDTO): PaginatedCategoryListResponseDTO
+    {
+        // todo: реализовать кэширование
+        $queryResult = $this->categoryRepository->getJournalCategories();
+
+        if($requestDTO->getOffset() && $requestDTO->getLimit()){
+            $categoryRows = array_slice(
+                $queryResult->getRows(),
+                $requestDTO->getOffset(),
+                $requestDTO->getLimit()
+            );
+        } else {
+            $categoryRows = $queryResult->getRows();
+        }
+
+        $categoryDTOs = [];
+        foreach ($categoryRows as $row){
+            $categoryDTOs[] = CategoryListResponseDTO::createFromIceQueryResultRow($row);
+        }
+
+        return new PaginatedCategoryListResponseDTO(dtoItems: $categoryDTOs);
+    }
+
+    public function getAllCategories(CategoryListRequestDTO $requestDTO): PaginatedCategoryListResponseDTO
+    {
+        // todo: реализовать кэширование
+        $rows = $this->categoryRepository->getAllCategories();
+
+        if($requestDTO->getOffset() && $requestDTO->getLimit()){
+            $categories = array_slice($rows, $requestDTO->getOffset(), $requestDTO->getLimit());
+        } else {
+            $categories = $rows;
+        }
+
+        $categoryDTOs = [];
+        foreach ($categories as $category){
+            $categoryDTOs[] = new CategoryListResponseDTO(
+                id: $category->id,
+                title: $category->title,
+                active: true
+            );
+        }
+
+        return new PaginatedCategoryListResponseDTO(dtoItems: $categoryDTOs);
+    }
+
+    public function getSubCategories(SubCategoryListRequestDTO $requestDTO): PaginatedSubCategoryListResponseDTO
+    {
+        if ($requestDTO->getCategoryId() === 0) {
+            $queryResult = $this->categoryRepository->getPrivateSubCategories($requestDTO);
+        } else if ($requestDTO->getType() === DocumentType::BOOK || $requestDTO->getSyntex()) {
+            $queryResult = $this->categoryRepository->getBookSubCategories($requestDTO);
+        } else if ($requestDTO->getType() === DocumentType::JOURNAL) {
+            $queryResult = $this->categoryRepository->getJournalSubCategories($requestDTO);
+        } else {
+            $queryResult = $this->categoryRepository->getAllSubCategories($requestDTO);
+        }
+
+        $subCategoryDTOs = [];
+        foreach ($queryResult->getRows() as $row){
+            $subCategoryDTOs[] = SubCategoryListResponseDTO::create(
+                id: $row['id'],
+                title: $row['title'],
+            );
+        }
+
+        return new PaginatedSubCategoryListResponseDTO(dtoItems: $subCategoryDTOs);
+    }
+}

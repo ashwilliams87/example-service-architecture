@@ -1,0 +1,85 @@
+[08:28:26 1724315306.2139] 
+ Ice\Exception\Error: Class Lan\Transformers\Book\BookCardListTransformer contains 1 abstract method and must therefore be declared abstract or implement the remaining methods (Lan\Contracts\Transformers\TransformableToArray::toArray) [peak: 34 MB]  
+ /var/www/html/api-laravel/Lan/Transformers/Book/BookCardListTransformer.php:7  
+ 
+#0 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:276  
+	Ice\Core\Logger->createException('Class Lan\\Trans...', '/var/www/html/a...', 7, NULL, Array, 1) 
+#1 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:247  
+	Ice\Core\Logger->error('Class Lan\\Trans...', '/var/www/html/a...', 7, NULL, Array, 1) 
+#2 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:197  
+	Ice\Core\Logger::errorHandler:1, 'Class Lan\\Trans...', '/var/www/html/a...', 7, Array) 
+#3 [internal function]: Ice\Core\Logger::shutdownHandler() 
+#4 {main} 
+ 
+[08:29:23 1724315363.5764] 
+ Ice\Exception\Error: Class Lan\Transformers\Book\BookCardListTransformer contains 1 abstract method and must therefore be declared abstract or implement the remaining methods (Lan\Contracts\Transformers\TransformableToArray::toArray) [peak: 34 MB]  
+ /var/www/html/api-laravel/Lan/Transformers/Book/BookCardListTransformer.php:7  
+ 
+#0 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:276  
+	Ice\Core\Logger->createException('Class Lan\\Trans...', '/var/www/html/a...', 7, NULL, Array, 1) 
+#1 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:247  
+	Ice\Core\Logger->error('Class Lan\\Trans...', '/var/www/html/a...', 7, NULL, Array, 1) 
+#2 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:197  
+	Ice\Core\Logger::errorHandler:1, 'Class Lan\\Trans...', '/var/www/html/a...', 7, Array) 
+#3 [internal function]: Ice\Core\Logger::shutdownHandler() 
+#4 {main} 
+ 
+[08:36:52 1724315812.8824] 
+ Ice\Exception\Error: During inheritance of Lan\Transformers\Book\BookListPaginatedTransformer, while autoloading Lan\Transformers\Book\BookListTransformer: Uncaught ErrorException: include_once(/var/www/html/api-laravel/vendor/composer/../../Lan/Transformers/Book/BookListTransformer.php): Failed to open stream: No such file or directory in /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Loader.php:183
+Stack trace:
+#0 /var/www/html/api-laravel/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(256): Illuminate\Foundation\Bootstrap\HandleExceptions->handleError(2, 'include_once(/v...', '/var/www/html/a...', 183)
+#1 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Loader.php(183): Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(2, 'include_once(/v...', '/var/www/html/a...', 183)
+#2 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Loader.php(183): include_once('/var/www/html/a...')
+#3 /var/www/html/api-laravel/Lan/Transformers/Book/BookListPaginatedTransformer.php(7): Ice\Core\Loader::load('Lan\\Transformer...')
+#4 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Loader.php(183): include_once('/var/www/html/a...')
+#5 [internal function]: Ice\Core\Loader::load('Lan\\Transformer...')
+#6 /var/www/html/api-laravel/vendor/laravel/framework/src/Illuminate/Support/Reflector.php(161): enum_exists('Lan\\Transformer...')
+#7 /var/www/html/api-laravel/vendor/laravel/framework/src/Illuminate/Routing/RouteSignatureParameters.php(31): Illuminate\Support\Reflector::isParameterBackedEnumWithStringBackingType(Object(ReflectionParameter))
+#8 [internal function]: Illuminate\Routing\RouteSignatureParameters::Illuminate\Routing\{closure}(Object(ReflectionParameter))
+#9 /var/www/html/api-laravel/vendor/laravel/framework/src/Illuminate/Routing/RouteSignatureParameters.php(31): array_filter(Array, Object(Closure))
+#10 /var/www/html/api-laravel/vendor/laravel/framework/src/Illuminate/Routing/Route.php(538): Illuminate\Routing\RouteSignatureParameters::fromAction(Array, Array)
+#11 /var/www/html/api-laravel/vendor/laravel/framework/src/Illuminate/Routing/ImplicitRouteBinding.php(80): Illuminate\Routing\Route->signatureParameters(Array)
+#12 /var/www/html/api-laravel/vendor/laravel/framework/src/Illuminate/Routing/ImplicitRouteBinding.php(28): Illuminate\Routing\ImplicitRouteBinding::resolveBackedEnumsForRoute(Object(Illuminate\Routing\Route), Array)
+#13 /var/www/html/api-laravel/vendor/laravel/framework/src/Illuminate/Routing/Router.php(961): Illuminate\Routing\ImplicitRouteBinding::resolveForRoute(Object(Illuminate\Foundation\Application), Object(Illuminate\Routing\Route))
+#14 [internal function]: Illuminate\Routing\Router->Illuminate\Routing\{closure}(Object(Illuminate\Foundation\Application), Object(Illuminate\Routing\Route), Object(Closure))
+#15 /var/www/html/api-laravel/vendor/laravel/framework/src/Illuminate/Routing/Router.php(963): call_user_func(Object(Closure), Object(Illuminate\Foundation\Application), Object(Illuminate\Routing\Route), Object(Closure))
+#16 /var/www/html/api-laravel/vendor/laravel/framework/src/Illuminate/Routing/Middleware/SubstituteBindings.php(42): Illuminate\Routing\Router->substituteImplicitBindings(Object(Illuminate\Routing\Route))
+#17 /var/www/html/api-laravel/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\Routing\Middleware\SubstituteBindings->handle(Object(Illuminate\Http\Request), Object(Closure))
+#18 /var/www/html/api-laravel/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(119): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#19 /var/www/html/api-laravel/vendor/laravel/framework/src/Illuminate/Routing/Router.php(807): Illuminate\Pipeline\Pipeline->then(Object(Closure))
+#20 /var/www/html/api-laravel/vendor/laravel/framework/src/Illuminate/Routing/Router.php(786): Illuminate\Routing\Router->runRouteWithinStack(Object(Illuminate\Routing\Route), Object(Illuminate\Http\Request))
+#21 /var/www/html/api-laravel/vendor/laravel/framework/src/Illuminate/Routing/Router.php(750): Illuminate\Routing\Router->runRoute(Object(Illuminate\Http\Request), Object(Illuminate\Routing\Route))
+#22 /var/www/html/api-laravel/vendor/laravel/framework/src/Illuminate/Routing/Router.php(739): Illuminate\Routing\Router->dispatchToRoute(Object(Illuminate\Http\Request))
+#23 /var/www/html/api-laravel/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(201): Illuminate\Routing\Router->dispatch(Object(Illuminate\Http\Request))
+#24 /var/www/html/api-laravel/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(144): Illuminate\Foundation\Http\Kernel->Illuminate\Foundation\Http\{closure}(Object(Illuminate\Http\Request))
+#25 /var/www/html/api-laravel/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#26 /var/www/html/api-laravel/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/ConvertEmptyStringsToNull.php(31): Illuminate\Foundation\Http\Middleware\TransformsRequest->handle(Object(Illuminate\Http\Request), Object(Closure))
+#27 /var/www/html/api-laravel/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull->handle(Object(Illuminate\Http\Request), Object(Closure))
+#28 /var/www/html/api-laravel/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#29 /var/www/html/api-laravel/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TrimStrings.php(51): Illuminate\Foundation\Http\Middleware\TransformsRequest->handle(Object(Illuminate\Http\Request), Object(Closure))
+#30 /var/www/html/api-laravel/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\Foundation\Http\Middleware\TrimStrings->handle(Object(Illuminate\Http\Request), Object(Closure))
+#31 /var/www/html/api-laravel/vendor/laravel/framework/src/Illuminate/Http/Middleware/ValidatePostSize.php(27): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#32 /var/www/html/api-laravel/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\Http\Middleware\ValidatePostSize->handle(Object(Illuminate\Http\Request), Object(Closure))
+#33 /var/www/html/api-laravel/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/PreventRequestsDuringMaintenance.php(110): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#34 /var/www/html/api-laravel/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance->handle(Object(Illuminate\Http\Request), Object(Closure))
+#35 /var/www/html/api-laravel/vendor/laravel/framework/src/Illuminate/Http/Middleware/HandleCors.php(49): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#36 /var/www/html/api-laravel/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\Http\Middleware\HandleCors->handle(Object(Illuminate\Http\Request), Object(Closure))
+#37 /var/www/html/api-laravel/vendor/laravel/framework/src/Illuminate/Http/Middleware/TrustProxies.php(57): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#38 /var/www/html/api-laravel/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\Http\Middleware\TrustProxies->handle(Object(Illuminate\Http\Request), Object(Closure))
+#39 /var/www/html/api-laravel/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(119): Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#40 /var/www/html/api-laravel/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(176): Illuminate\Pipeline\Pipeline->then(Object(Closure))
+#41 /var/www/html/api-laravel/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(145): Illuminate\Foundation\Http\Kernel->sendRequestThroughRouter(Object(Illuminate\Http\Request))
+#42 /var/www/html/api-laravel/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1188): Illuminate\Foundation\Http\Kernel->handle(Object(Illuminate\Http\Request))
+#43 /var/www/html/api-laravel/public/index.php(24): Illuminate\Foundation\Application->handleRequest(Object(Illuminate\Http\Request))
+#44 {main} [peak: 34 MB]  
+ /var/www/html/api-laravel/Lan/Transformers/Book/BookListPaginatedTransformer.php:7  
+ 
+#0 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:276  
+	Ice\Core\Logger->createException('During inherita...', '/var/www/html/a...', 7, NULL, Array, 1) 
+#1 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:247  
+	Ice\Core\Logger->error('During inherita...', '/var/www/html/a...', 7, NULL, Array, 1) 
+#2 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:197  
+	Ice\Core\Logger::errorHandler:1, 'During inherita...', '/var/www/html/a...', 7, Array) 
+#3 [internal function]: Ice\Core\Logger::shutdownHandler() 
+#4 {main} 
+ 

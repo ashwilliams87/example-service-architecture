@@ -1,0 +1,72 @@
+<?php
+
+namespace App\Http\Controllers\Ebs;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\CheckIpRequest;
+use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\RecoverPasswordRequest;
+use Lan\Services\Contracts\Http\Response\ResponseServiceInterface;
+use Lan\Services\Contracts\UserServiceInterface;
+use Lan\Transformers\Contracts\Http\Auth\UserTransformer;
+use App\Http\Requests\Auth\CheckInviteRequest;
+
+class AuthController extends Controller
+{
+    public function __construct(
+        public UserServiceInterface $userService,
+        public ResponseServiceInterface $responseService
+    )
+    {
+    }
+
+    public function logIn(
+        LoginRequest $request,
+        UserTransformer $transformer
+    )
+    {
+        $logInResultDTO = $this->userService->logIn($request->toDTO());
+
+        if($logInResultDTO->getStatus()->isError()){
+            return $this->responseService->makeErrorResponse($logInResultDTO->getStatus());
+        }
+
+        $user = $transformer->toArray($logInResultDTO->getUser());
+        return $this->responseService->makeSuccessResponseWithObject(data: ['User'=> $user]);
+    }
+
+    public function logOut()
+    {
+        $status = $this->userService->logOut();
+
+        if($status->isError()){
+            return $this->responseService->makeErrorResponse($status);
+        }
+
+        return $this->responseService->makeEmptySuccessResponse();
+    }
+
+    public function recoverPassword(RecoverPasswordRequest $request)
+    {
+        $status = $this->userService->recoverPassword($request->toDTO());
+
+        if($status->isError()){
+            return $this->responseService->makeErrorResponse($status);
+        }
+
+        return $this->responseService->makeEmptySuccessResponse();
+    }
+
+    public function checkIp(CheckIpRequest $request)
+    {
+        $responseDTO = $this->userService->getSubscriberFromIp($request->toDTO());
+
+        if($responseDTO->getStatus()->isError()){
+            return $this->responseService->makeErrorResponse($responseDTO->getStatus());
+        }
+
+        return $this->responseService->makeSuccessResponseWithObject(
+            data: ['subscriber_name' => $responseDTO->getSubscriberName()]
+        );
+    }
+}

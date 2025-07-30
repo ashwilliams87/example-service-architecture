@@ -1,0 +1,3 @@
+<?php //App%255CRequest%255CBookSearchContentRequest%2523getSimilarityCutoff
+
+return [PHP_INT_MAX, []];

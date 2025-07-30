@@ -1,0 +1,8 @@
+[2024-08-19 10:07:20 1724062040.9533] sql (native): [Time: 3 ms Mem: 0 B (peak: 34 MB)] SELECT FOUND_ROWS()
+
+[2024-08-19 10:07:36 1724062056.6505] sql (native): [Time: 3 ms Mem: 0 B (peak: 34 MB)] SELECT FOUND_ROWS()
+
+[2024-08-19 10:09:06 1724062146.2885] sql (native): [Time: 3 ms Mem: 0 B (peak: 34 MB)] SELECT FOUND_ROWS()
+
+[2024-08-19 10:09:06 1724062146.3418] sql (native): [Time: 3 ms Mem: 0 B (peak: 34 MB)] SELECT FOUND_ROWS()
+

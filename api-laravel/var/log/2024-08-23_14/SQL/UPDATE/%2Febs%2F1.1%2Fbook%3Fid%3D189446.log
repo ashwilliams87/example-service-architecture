@@ -1,0 +1,2 @@
+[2024-08-23 14:04:20 1724421860.7138] sql (query): [Time: 9 ms Mem: 0 B (peak: 42 MB)]  UPDATE `ebs`.`fos_user_user` `User` SET `User`.`last_login`=? WHERE `User`.`id` = ? LIMIT 1  ("2024-08-23 14:04:20", "10121529") result: 'numRows' => 0, 'affectedRows' => 1, 'foundRows' => 0, 'insertId' => 
+

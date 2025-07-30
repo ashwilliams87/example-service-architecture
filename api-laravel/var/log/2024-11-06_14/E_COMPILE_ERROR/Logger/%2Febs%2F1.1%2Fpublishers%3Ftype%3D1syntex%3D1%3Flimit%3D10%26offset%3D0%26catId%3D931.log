@@ -1,0 +1,13 @@
+[14:30:44 1730903444.4797] 
+ Ice\Exception\Error: Declaration of Lan\Services\PublisherService::getPublishers(Lan\Contracts\DTOs\Document\DocumentsTypeRequestDTOInterface $requestDTO): Lan\Contracts\DTOs\Publisher\PublisherListDTOInterface must be compatible with Lan\Contracts\Services\PublisherServiceInterface::getPublishers(Lan\Contracts\DTOs\Document\DocumentsTypeRequestDTOInterface $requestDTO): Lan\Contracts\DTOs\Collection\LanDTOListInterface [peak: 34 MB]  
+ /var/www/html/api-laravel/Lan/Services/PublisherService.php:21  
+ 
+#0 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:276  
+	Ice\Core\Logger->createException('Declaration of ...', '/var/www/html/a...', 21, NULL, Array, 64) 
+#1 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:247  
+	Ice\Core\Logger->error('Declaration of ...', '/var/www/html/a...', 21, NULL, Array, 64) 
+#2 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:197  
+	Ice\Core\Logger::errorHandler:64, 'Declaration of ...', '/var/www/html/a...', 21, Array) 
+#3 [internal function]: Ice\Core\Logger::shutdownHandler() 
+#4 {main} 
+ 

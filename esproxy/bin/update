@@ -1,0 +1,6 @@
+#!/bin/bash
+
+cd $(dirname $(dirname $(realpath $0))) &&
+vendor/bin/ice-update &&
+rm -rf public/build &&
+npm run-script dev;

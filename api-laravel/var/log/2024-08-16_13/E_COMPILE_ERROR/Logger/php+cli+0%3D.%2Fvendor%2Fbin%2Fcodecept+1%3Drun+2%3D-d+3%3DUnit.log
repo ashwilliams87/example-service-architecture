@@ -1,0 +1,65 @@
+[13:23:02 1723814582.6949] 
+ Ice\Exception\Error: Cannot use Lan\Contracts\DTOs\LanDTOInterface as LanDTOInterface because the name is already in use [peak: 66 MB]  
+ /var/www/html/api-laravel/Lan/DTOs/Journal/Responses/JournalIssueList/JournalIssueCardResponseDTO.php:7  
+ 
+#0 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:276  
+	Ice\Core\Logger->createException('Cannot use Lan\\...', '/var/www/html/a...', 7, NULL, Array, 64) 
+#1 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:247  
+	Ice\Core\Logger->error('Cannot use Lan\\...', '/var/www/html/a...', 7, NULL, Array, 64) 
+#2 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:197  
+	Ice\Core\Logger::errorHandler:64, 'Cannot use Lan\\...', '/var/www/html/a...', 7, Array) 
+#3 [internal function]: Ice\Core\Logger::shutdownHandler() 
+#4 {main} 
+ 
+[13:23:25 1723814605.5971] 
+ Ice\Exception\Error: Cannot use Lan\Contracts\DTOs\LanDTOInterface as LanDTOInterface because the name is already in use [peak: 68 MB]  
+ /var/www/html/api-laravel/Lan/DTOs/Search/Responses/SearchBooksResponseDTO.php:6  
+ 
+#0 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:276  
+	Ice\Core\Logger->createException('Cannot use Lan\\...', '/var/www/html/a...', 6, NULL, Array, 64) 
+#1 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:247  
+	Ice\Core\Logger->error('Cannot use Lan\\...', '/var/www/html/a...', 6, NULL, Array, 64) 
+#2 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:197  
+	Ice\Core\Logger::errorHandler:64, 'Cannot use Lan\\...', '/var/www/html/a...', 6, Array) 
+#3 [internal function]: Ice\Core\Logger::shutdownHandler() 
+#4 {main} 
+ 
+[13:23:50 1723814630.7696] 
+ Ice\Exception\Error: Cannot use Lan\Contracts\DTOs\LanDTOInterface as LanDTOInterface because the name is already in use [peak: 68 MB]  
+ /var/www/html/api-laravel/Lan/DTOs/Search/Responses/SearchBooksResponseDTO.php:6  
+ 
+#0 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:276  
+	Ice\Core\Logger->createException('Cannot use Lan\\...', '/var/www/html/a...', 6, NULL, Array, 64) 
+#1 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:247  
+	Ice\Core\Logger->error('Cannot use Lan\\...', '/var/www/html/a...', 6, NULL, Array, 64) 
+#2 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:197  
+	Ice\Core\Logger::errorHandler:64, 'Cannot use Lan\\...', '/var/www/html/a...', 6, Array) 
+#3 [internal function]: Ice\Core\Logger::shutdownHandler() 
+#4 {main} 
+ 
+[13:24:03 1723814643.144] 
+ Ice\Exception\Error: Cannot use Lan\Contracts\DTOs\LanDTOInterface as LanDTOInterface because the name is already in use [peak: 68 MB]  
+ /var/www/html/api-laravel/Lan/DTOs/Search/Responses/SearchBooksResponseDTO.php:6  
+ 
+#0 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:276  
+	Ice\Core\Logger->createException('Cannot use Lan\\...', '/var/www/html/a...', 6, NULL, Array, 64) 
+#1 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:247  
+	Ice\Core\Logger->error('Cannot use Lan\\...', '/var/www/html/a...', 6, NULL, Array, 64) 
+#2 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:197  
+	Ice\Core\Logger::errorHandler:64, 'Cannot use Lan\\...', '/var/www/html/a...', 6, Array) 
+#3 [internal function]: Ice\Core\Logger::shutdownHandler() 
+#4 {main} 
+ 
+[13:24:11 1723814651.8991] 
+ Ice\Exception\Error: Declaration of Lan\Repositories\Ice\BookRepository::getBooksFromCatalog(Lan\Contracts\DTOs\Book\BookListRequestDTOInterface $requestDTO): Ice\Core\QueryResult must be compatible with Lan\Contracts\Repositories\BookRepositoryInterface::getBooksFromCatalog(Lan\Contracts\DTOs\Document\DocumentsTypeRequestDTOInterface $requestDTO): Ice\Core\QueryResult [peak: 76 MB]  
+ /var/www/html/api-laravel/Lan/Repositories/Ice/BookRepository.php:25  
+ 
+#0 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:276  
+	Ice\Core\Logger->createException('Declaration of ...', '/var/www/html/a...', 25, NULL, Array, 64) 
+#1 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:247  
+	Ice\Core\Logger->error('Declaration of ...', '/var/www/html/a...', 25, NULL, Array, 64) 
+#2 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:197  
+	Ice\Core\Logger::errorHandler:64, 'Declaration of ...', '/var/www/html/a...', 25, Array) 
+#3 [internal function]: Ice\Core\Logger::shutdownHandler() 
+#4 {main} 
+ 

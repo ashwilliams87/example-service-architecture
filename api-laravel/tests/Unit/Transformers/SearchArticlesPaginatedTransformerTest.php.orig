@@ -1,0 +1,49 @@
+<?php
+
+namespace Tests\Unit\Transformers;
+
+use Codeception\Test\Unit;
+use Lan\DTOs\Search\Responses\PaginatedSearchArticlesResponseDTO;
+use Lan\DTOs\Search\Responses\SearchArticlesResponseDTO;
+use Lan\Transformers\Contracts\Http\Search\SearchArticlesPaginatedTransformer;
+use Lan\Transformers\Contracts\Http\Search\SearchArticlesTransformer;
+
+class SearchArticlesPaginatedTransformerTest extends Unit
+{
+    public function testCreateTransformer(): void
+    {
+        $transformer = SearchArticlesPaginatedTransformer::create();
+        $this->assertInstanceOf(SearchArticlesPaginatedTransformer::class, $transformer);
+    }
+
+    public function testToArray(): void{
+        $paginatedTransformer = SearchArticlesPaginatedTransformer::create();
+        $expectedTransformationResult = [];
+        $searchResultDTOs = [];
+        for ($i = 0; $i < 10; $i++) {
+            $searchResultDTOs[] = SearchArticlesResponseDTO::create(
+                id: $i,
+                name: 'name' . $i,
+                snippet: 'snippet' . $i,
+                available: true,
+                startPage: $i,
+                finishPage: $i + 10,
+                pages: $i + 20,
+                authors: 'author' . $i,
+                publisherName: 'publisher' . $i,
+                journalId: $i,
+                journalName: 'journal' . $i,
+                issueName: 'issue' . $i,
+                issueYear: 2000 + $i,
+                description: 'description' . $i
+            );
+
+            $searchArticleTransformer = new SearchArticlesTransformer();
+            $expectedTransformationResult[] = $searchArticleTransformer->toArray($searchResultDTOs[$i]);
+        }
+
+        $paginatedDto = new PaginatedSearchArticlesResponseDTO(dtoItems: $searchResultDTOs);
+        $transformResult = $paginatedTransformer->setPaginatedDto($paginatedDto)->toArray();
+        $this->assertEquals($expectedTransformationResult, $transformResult);
+    }
+}

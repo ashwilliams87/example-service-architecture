@@ -1,0 +1,26 @@
+[06:55:59 1724309759.7726] 
+ Ice\Exception\Error: Class Lan\Transformers\Book\BookCardListTransformer contains 1 abstract method and must therefore be declared abstract or implement the remaining methods (Lan\Contracts\Transformers\TransformableToArray::toArray) [peak: 34 MB]  
+ /var/www/html/api-laravel/Lan/Transformers/Book/BookCardListTransformer.php:7  
+ 
+#0 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:276  
+	Ice\Core\Logger->createException('Class Lan\\Trans...', '/var/www/html/a...', 7, NULL, Array, 1) 
+#1 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:247  
+	Ice\Core\Logger->error('Class Lan\\Trans...', '/var/www/html/a...', 7, NULL, Array, 1) 
+#2 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:197  
+	Ice\Core\Logger::errorHandler:1, 'Class Lan\\Trans...', '/var/www/html/a...', 7, Array) 
+#3 [internal function]: Ice\Core\Logger::shutdownHandler() 
+#4 {main} 
+ 
+[06:57:51 1724309871.2311] 
+ Ice\Exception\Error: Class Lan\Transformers\Book\BookCardListTransformer contains 1 abstract method and must therefore be declared abstract or implement the remaining methods (Lan\Contracts\Transformers\TransformableToArray::toArray) [peak: 34 MB]  
+ /var/www/html/api-laravel/Lan/Transformers/Book/BookCardListTransformer.php:7  
+ 
+#0 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:276  
+	Ice\Core\Logger->createException('Class Lan\\Trans...', '/var/www/html/a...', 7, NULL, Array, 1) 
+#1 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:247  
+	Ice\Core\Logger->error('Class Lan\\Trans...', '/var/www/html/a...', 7, NULL, Array, 1) 
+#2 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:197  
+	Ice\Core\Logger::errorHandler:1, 'Class Lan\\Trans...', '/var/www/html/a...', 7, Array) 
+#3 [internal function]: Ice\Core\Logger::shutdownHandler() 
+#4 {main} 
+ 

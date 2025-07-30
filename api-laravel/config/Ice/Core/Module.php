@@ -1,0 +1,36 @@
+<?php
+return [
+    'alias' => 'ApiLaravel',
+    'namespace' => 'Lan\ApiLaravel',
+    'module' => [
+        'vendor' => 'lan',
+        'name' => 'api-laravel',
+        'version' => '1.0',
+        'description' => 'Ebs mobile api based on Laravel',
+        'authors' => 'anonymous <email>',
+        'vcs' => 'mercurial',
+        'Ice\\Core\\DataSource' => [],
+        'pathes' => [
+            'configDir' => 'config/',
+            'sourceDir' => 'source/',
+            'resourceDir' => 'resource/',
+            'varDir' => 'var/',
+            'logDir' => 'var/log/',
+            'cacheDir' => 'var/cache/',
+            'uploadDir' => 'var/upload/',
+            'dataDir' => 'var/data/',
+            'tempDir' => 'var/temp/',
+            'backupDir' => 'var/backup/',
+            'runDir' => 'var/run/',
+            'privateDownloadDir' => 'var/download/',
+            'publicDir' => 'public/',
+            'compiledResourceDir' => 'public/resource/',
+            'downloadDir' => 'public/download/',
+        ],
+        'ignorePatterns' => [],
+    ],
+    'modules' => [
+        'lan/ebs-data' => '/ebs',
+        'lan/security' => '/security',
+    ],
+];

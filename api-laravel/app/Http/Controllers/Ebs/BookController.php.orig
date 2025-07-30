@@ -1,0 +1,130 @@
+<?php
+
+namespace App\Http\Controllers\Ebs;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Book\BookCardRequest;
+use App\Http\Requests\Book\BookCreateKeyRequest;
+use App\Http\Requests\Book\BookDownloadRequest;
+use App\Http\Requests\Book\BookListRequest;
+use App\Http\Requests\Book\BookMetaRequest;
+use Lan\DataTypes\Contracts\FileTypes\FileTypeInterface;
+use Lan\DataTypes\FileTypes\AudioFileType;
+use Lan\DataTypes\FileTypes\EpubFileType;
+use Lan\DataTypes\FileTypes\PdfFileType;
+use Lan\DataTypes\FileTypes\TextFileType;
+use Lan\Services\Contracts\BookServiceInterface;
+use Lan\Services\Contracts\Http\Response\ResponseServiceInterface;
+use Lan\Transformers\Contracts\Http\Book\BookCardTransformer;
+use Lan\Transformers\Contracts\Http\Book\BookCreateKeyTransformer;
+use Lan\Transformers\Contracts\Http\Book\BookListPaginatedTransformer;
+use Lan\Transformers\Contracts\Http\Book\BookMetaTransformer;
+
+class BookController extends Controller
+{
+    public function __construct(
+        public BookServiceInterface     $bookService,
+        public ResponseServiceInterface $responseService
+    )
+    {
+
+    }
+
+    public function bookList(
+        BookListRequest              $request,
+        BookListPaginatedTransformer $paginatedTransformer
+    )
+    {
+        // todo: insertSubscriberVisit();
+        $paginatedDTO = $this->bookService->getBooksFromCatalog($request->toDTO());
+        $data = $paginatedTransformer->setPaginatedDto($paginatedDTO)
+            ->toArray();
+
+        return $this->responseService->makeSuccessResponseWithObject(data: $data);
+    }
+
+    public function bookCard(
+        BookCardRequest     $request,
+        BookCardTransformer $transformer
+    )
+    {
+        // todo: insertSubscriberVisit();
+        $bookDTO = $this->bookService->getBook($request->toDTO());
+
+        if ($bookDTO->isEmpty()) {
+            return $this->responseService->makeNotFoundResponse();
+        }
+
+        return $this->responseService->makeSuccessResponseWithObject(
+            data: $transformer->toArray($bookDTO)
+        );
+    }
+
+    public function bookCreateKey(
+        BookCreateKeyRequest     $request,
+        BookCreateKeyTransformer $transformer,
+    )
+    {
+        $responseDTO = $this->bookService->createBookKey($request->toDTO());
+
+        if ($responseDTO->getStatus()->isError()) {
+            return $this->responseService->makeErrorResponse($responseDTO->getStatus());
+        }
+
+        return $this->responseService->makeSuccessResponseWithObject(
+            data: $transformer->toArray($responseDTO)
+        );
+    }
+
+    public function bookMeta(
+        BookMetaRequest     $request,
+        BookMetaTransformer $transformer,
+    )
+    {
+        $responseDTO = $this->bookService->getBookMeta($request->toDTO());
+
+        if ($responseDTO->getStatus()->isError()) {
+            return $this->responseService->makeErrorResponse($responseDTO->getStatus());
+        }
+
+        return $this->responseService->makeSuccessResponseWithObject(
+            data: $transformer->toArray($responseDTO)
+        );
+    }
+
+    public function downloadPdf(BookDownloadRequest $request)
+    {
+        return $this->downloadFile($request, new PdfFileType());
+    }
+
+    public function downloadEpub(BookDownloadRequest $request)
+    {
+        return $this->downloadFile($request, new EpubFileType());
+    }
+
+    public function downloadText(BookDownloadRequest $request)
+    {
+        return $this->downloadFile($request, new TextFileType());
+    }
+
+    public function downloadAudio(BookDownloadRequest $request)
+    {
+        return $this->downloadFile($request, new AudioFileType());
+    }
+
+    private function downloadFile(
+        BookDownloadRequest $request,
+        FileTypeInterface   $fileType
+    )
+    {
+        $responseDTO = $this->bookService->getDownloadFilePath($request->toDTO(), $fileType);
+
+        if ($responseDTO->getStatus()->isError()) {
+            return $this->responseService->makeErrorResponse($responseDTO->getStatus());
+        }
+
+        $this->responseService->sendEncryptedFileToClient(
+            filePath: $responseDTO->getFilePath()
+        );
+    }
+}

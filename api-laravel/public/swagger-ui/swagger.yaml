@@ -1,0 +1,2483 @@
+openapi: 3.0.0
+info:
+  title: api-laravel
+  description: Backend для мобильного приложения ЭБС Лань
+  version: 1.0.0
+
+servers:
+  - url: https://api.landev.ru
+    description: Тестовая среда
+  - url: http://api-laravel.ebs.local
+    description: Локальная среда
+
+components:
+  securitySchemes:
+    authToken:
+      type: apiKey
+      in: header
+      name: x-auth-token
+  schemas:
+    BookListObject:
+      type: object
+      properties:
+        all_count:
+          type: integer
+          example: 1
+        expired:
+          type: string
+          example: "2099-12-31"
+        id:
+          type: integer
+          example: 183134
+        book_private:
+          type: integer
+          example: 0
+        description:
+          type: string
+          example: "В монографии представлены научно-исследовательский материал..."
+        year:
+          type: integer
+          example: 2021
+        book_expired:
+          type: string
+          example: "2099-12-31"
+          nullable: true
+        title:
+          type: string
+          example: "Ива в ландшафтной архитектуре. Перспективное использование видов рода Salix в озеленении населенных пунктов"
+        author:
+          type: string
+          example: "Вергунова А. А., Сокольская О. Б."
+        hasPdf:
+          type: boolean
+          example: true
+        hasEpub:
+          type: boolean
+          example: true
+        hasAudio:
+          type: boolean
+          example: false
+        hasSyntex:
+          type: boolean
+          example: true
+        synthesizer_editor:
+          type: string
+          example: ""
+        synthesizer_quality:
+          type: integer
+          example: 1
+        publisher:
+          type: string
+          example: "Издательство \"Лань\""
+        expired_date:
+          type: string
+          example: null
+          nullable: true
+        access_id:
+          type: integer
+          example: null
+          nullable: true
+        active:
+          type: boolean
+          example: false
+    BookCardObject:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 183134
+        title:
+          type: string
+          example: "Ива в ландшафтной архитектуре. Перспективное использование видов рода Salix в озеленении населенных пунктов"
+        description:
+          type: string
+          example: "В монографии представлены научно-исследовательский материал..."
+        isbn:
+          type: string
+          example: "978-5-8114-7810-1"
+        edition:
+          type: string
+          example: ""
+        pages:
+          type: string
+          example: "120"
+        book_private:
+          type: integer
+          example: 0
+        publisher__fk:
+          type: integer
+          example: 905
+        synthesizer_quality:
+          type: integer
+          example: 1
+        author:
+          type: string
+          example: "Вергунова А. А., Сокольская О. Б."
+        year:
+          type: integer
+          example: 2021
+        active:
+          type: boolean
+          example: false
+        hasPdf:
+          type: boolean
+          example: true
+        hasEpub:
+          type: boolean
+          example: true
+        hasSyntex:
+          type: boolean
+          example: true
+        hasAudio:
+          type: boolean
+          example: false
+        publisher:
+          type: string
+          example: "Издательство \"Лань\""
+        expired:
+          type: string
+          example: "2099-12-31"
+        synthesizer_editor:
+          type: string
+          example: ""
+        access_date:
+          type: string
+          example: "2024-04-22"
+        expired_date:
+          type: string
+          example: null
+          nullable: true
+        cover:
+          type: string
+          example: "http://ebs.local/img/cover/book/183134.jpg"
+        audio:
+          type: boolean
+          example: false
+        size:
+          type: integer
+          example: 0
+    CategoryObject:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 2612
+        title:
+          type: string
+          example: "Музыка и театр"
+        active:
+          type: boolean
+          example: false
+    UserObject:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 23755196
+        x-auth-token:
+          type: string
+          example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhY2NvdW50X2NsYXNzIjoiTGFuXFxTZWN1cml0eVxcTW9kZWxcXEFjY291bnRfUGFzc3dvcmQiLCJhY2NvdW50X2tleSI6Ijc1NzgyNTQiLCJ1c2VyIjp7ImFjY291bnRfdHlwZXMiOiIxMSIsImlkIjoyMzc1NTE5NiwibmFtZSI6Ilx1MDQxY1x1MDQzMFx1MDQzYVx1MDQ0MVx1MDQzOFx1MDQzYyIsInN1cm5hbWUiOiJcdTA0MWRcdTA0M2VcdTA0NDFcdTA0M2VcdTA0MzIiLCJwYXRyb255bWljIjpudWxsLCJsb2dpbmVkX2F0IjoiMjAyNC0wNC0yMiAyMDo1Nzo1OCIsImV4cGlyZWRfYXQiOiIyMDI0LTAzLTE0IDEzOjQwOjE5IiwibG9naW4iOm51bGwsImVtYWlsIjoibm9zb3YubS5lQHlhbmRleC5ydSJ9LCJpc3N1ZXIiOiJhcGkubGFuZGV2LnJ1Iiwic3ViamVjdCI6IkxhblxcU2VjdXJpdHlcXFdpZGdldFxcQWNjb3VudF9QYXNzd29yZCIsImlzX2F1dGgiOnRydWUsImlhdCI6MTcxMzgwODY3OCwidXBkYXRlX3RpbWUiOjEsImV4cCI6MTc0NDkxMjY3OCwidW5pcXVlX3VzZXIiOiJiNDUyZjNjZTlhOWY2YmE2ZTRjNzViMmNjYTczYTk5NyIsInNlc3Npb24iOiI5NzU0OTc1ODM1ZmNlNmQxODIyZTQzYmYzYmU5NDZmOTY2MjZhNTI2ODcyMjI2LjI4Njk1MDk5In0.sa9eufuCeyHq7LCBq3dqhqJc1NceQkKM0VfFTW5ri7I"
+        name:
+          type: string
+          example: "Иван Петровичь"
+        email:
+          type: string
+          example: "ivan.p@yandex.ru"
+        subscriber:
+          type: string
+          example: "Пользователь не привязан к организации"
+        subscription_end_date:
+          type: string
+          example: "2999-01-17"
+    SearchTypeResults:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 2
+        type:
+          type: string
+          example: "1"
+        title:
+          type: string
+          example: "Найдено в названиях книг"
+        cnt:
+          type: string
+          example: "14"
+    SearchBooksObject:
+      type: object
+      properties:
+        word:
+          type: string
+          example: "тесты"
+        snippet:
+          type: string
+          example: ""
+        id:
+          type: integer
+          example: 45332
+        hasPdf:
+          type: boolean
+          example: true
+        hasEpub:
+          type: boolean
+          example: false
+        hasAudio:
+          type: boolean
+          example: false
+        hasSyntex:
+          type: boolean
+          example: false
+        book_expired:
+          type: string
+          example: "2999-12-31"
+          nullable: true
+        book_private:
+          type: integer
+          example: 0
+        synthesizer_editor:
+          type: string
+          example: ""
+        synthesizer_quality:
+          type: integer
+          example: 0
+        active:
+          type: boolean
+          example: false
+        title:
+          type: string
+          example: "Планирование на предприятии: методические указания по изучению курса, рабочая программа, контрольные вопросы и тесты для студентов специальности 080502"
+        author:
+          type: string
+          example: "Кораблев А.И."
+        publisher:
+          type: string
+          example: "Санкт-Петербургский государственный лесотехнический университет имени С.М. Кирова"
+    SearchJournalsObject:
+      type: object
+      properties:
+        word:
+          type: string
+          example: "science"
+        snippet:
+          type: string
+          example: ""
+        id:
+          type: integer
+          example: 2374
+        publisher:
+          type: string
+          example: "Московский технологический институт"
+        active:
+          type: boolean
+          example: false
+        title:
+          type: string
+          example: "Cloud of science"
+    SearchArticlesObject:
+      type: object
+      properties:
+        snippet:
+          type: string
+          example: ". Breki, S. E. Alexandrov, A. S. Biel, S. G. Chulkin, V. A. Yakhimovich, A. E. Gvozdev, A. G. Kolmakov, E. A. Protopopov Breki Alexander Dzhalyulyevich doctor of technical <strong class=\"highlight\">sciences</strong>, associate professor, Peter the Great St. Petersburg State Polytechnic"
+        id:
+          type: integer
+          example: 702590
+        start_page:
+          type: integer
+          example: 179
+        finish_page:
+          type: integer
+          example: 190
+        pages:
+          type: integer
+          example: 12
+        active:
+          type: boolean
+          example: false
+        title:
+          type: string
+          example: "Обобщённая математическая модель динамики изменения силы трения при покое и начале скольжения"
+        author:
+          type: string
+          example: "Бреки А. Д., Александров С. Е., Биль А. С., Чулкин С. Г., Яхимович В. А., Гвоздев А. Е., Колмаков А. Г., Протопопов Е. А."
+        publisher:
+          type: string
+          example: "Тульский государственный педагогический университет им. Л.Н. Толстого"
+        journalId:
+          type: integer
+          example: 2917
+        journalName:
+          type: string
+          example: "Чебышевский сборник"
+        issue:
+          type: string
+          example: "2"
+        year:
+          type: integer
+          example: 2022
+        description:
+          type: string
+          example: "В статье представлена обобщённая эмпирическая математическая модель динамики изменения силы трения при покое и начале скольжения. На примере трения шара из стали ШХ15 по покрытиям из SiO2, нанесённым на плоские поверхности из поликарбоната и полиэтилентерефталата, показано, что существуют отклонения от стационарного значения силы трения при скольжении на небольшие расстояния. Разработанная математическая модель описывает фрикционное взаимодействие как при стационарном значении силы трения, так и при отклонениях от него."
+    DocumentKeyObject:
+      type: object
+      properties:
+        key:
+          type: array
+          items:
+            type: integer
+          example: [ 246,330,399,321,291,387,285,369,300,393,429,387,285,363,234,219,291,279,363,396,387,204,378,276,333,417,306,327,327,258,411,192,384,366,387,288,213,423,372,234,285,288,192,414,21 ]
+    DocumentMetaObject:
+      type: object
+      properties:
+        meta:
+          type: string
+          example: "A8TZNH1yZLA2melR6koCuN1nNjFp+NumKphoEYYGOOkaJJeKFZf5hp5JmNZY9YRF0yiWW829DffgyHD+yOSeoadi7bVIJAo+NP+qALX6yhBpBMQNZ1HX+iFM+6mSO47"
+    SyncAllRequest:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            bookMarks:
+              type: array
+              items:
+                $ref: '#/components/schemas/SyncBookMarkObject'
+            books:
+              type: array
+              items:
+                $ref: '#/components/schemas/SyncBookObject'
+            journalArticles:
+              type: array
+              items:
+                $ref: '#/components/schemas/SyncJournalArticleObject'
+        device_time:
+          type: integer
+          example: 1717685321
+    SyncAllResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            bookMarks:
+              type: array
+              items:
+                $ref: '#/components/schemas/SyncBookMarkObject'
+            books:
+              type: array
+              items:
+                $ref: '#/components/schemas/SyncBookObject'
+        device_time:
+          type: integer
+          example: 1717685321
+    SyncBookMarkObject:
+      type: object
+      properties:
+        article:
+          type: integer
+          example: 0
+        entity_id:
+          type: string
+          example: "65814"
+        cfi:
+          type: string
+          nullable: true
+        updated_at:
+          type: integer
+          example: 1714731363
+        entity:
+          type: string
+          example: "book"
+        id:
+          type: integer
+          example: 1
+        marker:
+          type: integer
+          example: 0
+        owner:
+          type: string
+          example: "ririritssen@mail.ru"
+        page:
+          type: string
+          example: "0"
+        sync_active:
+          type: integer
+          example: 1
+        type:
+          type: string
+          example: "epub"
+    SyncBookObject:
+      type: object
+      properties:
+        entity_id:
+          type: integer
+          example: 90879
+        sync_active:
+          type: integer
+          example: 1
+        updated_at:
+          type: integer
+          example: 1711369544
+    SyncJournalArticleObject:
+      type: object
+      properties:
+        entity_id:
+          type: integer
+          example: 306720
+        sync_active:
+          type: integer
+          example: 1
+        updated_at:
+          type: integer
+          example: 1709658648
+    PublisherListObject:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "905"
+        title:
+          type: string
+          example: "Издательство \"Лань\""
+    ArticleListObject:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "162254"
+        all_count:
+          type: integer
+          example: 1
+        journal_pk:
+          type: integer
+          example: 2374
+        journal_name:
+          type: string
+          example: "Cloud of science"
+        access_date:
+          type: string
+          example: "2025-06-03 12:20:53"
+        pages:
+          type: string
+          example: "5-16"
+        journalId:
+          type: string
+          example: "2374"
+        journalName:
+          type: string
+          example: 292672
+        issue:
+          type: string
+          example: "Cloud of science"
+        journal_issue_pk:
+          type: integer
+          example: "1"
+        year:
+          type: string
+          example: "2014"
+        publisher:
+          type: string
+          example: "Московский технологический институт"
+        title:
+          type: string
+          example: "ОБЛАЧНЫЕ ФУНКЦИИ - НОВЫЙ ЭТАП ИНФОРМАЦИОННОЙ ПОДДЕРЖКИ НАУКИ И ТЕХНИКИ; CLOUD FUNCTION - A NEW STAGE OF INFORMATIONAL SUPPORT OF SCIENCE AND TECHNOLOGY"
+        author:
+          type: string
+          example: "ОЧКОВ В.Ф., КО КО ЧЖО; OCHKO V.F. , KYAW KO KO"
+        start_page:
+          type: integer
+          example: 5
+        finish_page:
+          type: integer
+          example: 16
+        description:
+          type: string
+          example: "В статье рассмотрена новая информационная технология, связанная с размещением функций по свойствам веществ в Интернете для «облачных» ссылок на них и/или для скачивания и встраивания в свой программный расчетный проект. Рассмотрены типичные примеры расчетов с опорой на «облачные» функции; The article describes a new information technology associated with the placement of functions on the properties of materials on the Internet for the «cloud» references to them and / or to download and embed into your software project settlement. Consider a typical example calculations relying on the cloud function."
+        active:
+          type: boolean
+          example: true
+    JournalIssueListObject:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "2374"
+        title:
+          type: string
+          example: "Cloud of science"
+        issueperyear:
+          type: string
+          example: "4"
+        issn:
+          type: string
+          example: "2409-031X"
+        vac:
+          type: string
+          example: "нет"
+        edition:
+          type: string
+          example: "Главный редактор - Никульчев Е. В., д. т. н., профессор проректор, Московский технологический институт (Россия, Москва)"
+        description:
+          type: string
+          example: "Журнал содержит результаты прикладных и фундаментальных научных исследований в области информационных технологий, моделирования систем, прикладных информационных систем в различных сферах деятельности, научные обзоры по указанной тематике, а также обсуждение вопросов использования пакетов прикладных программ в инженерной и научной практике."
+        email:
+          type: string
+          example: ""
+        publisher:
+          type: string
+          example: "Московский технологический институт"
+        city:
+          type: string
+          example: "Москва"
+        country:
+          type: string
+          example: "Россия"
+        year:
+          type: string
+          example: "2013"
+        active:
+          type: boolean
+          example: true
+        cover:
+          type: string
+          example: "http://ebs.local/img/cover/journal/issue/298734.jpg"
+        years:
+          type: array
+          items:
+            $ref: '#/components/schemas/YearWithIssuesObject'
+    YearWithIssuesObject:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "2014"
+        issues:
+          type: array
+          items:
+            $ref: '#/components/schemas/IssueItemObject'
+    IssueItemObject:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "292672"
+        title:
+          type: string
+          example: "1"
+    SubscriberNameObject:
+      type: object
+      properties:
+        subscriber_name:
+          type: string
+          example: "Тестовый подписчик"
+    AuthorCharacterMapObject:
+      type: object
+      properties:
+        rus:
+          type: object
+          additionalProperties:
+            type: boolean
+          example:
+            "А": true
+            "Б": true
+            "В": true
+            "Г": true
+            "Д": true
+            "Е": true
+            "Ж": true
+            "З": true
+            "И": true
+            "К": true
+            "Л": true
+            "М": true
+            "Н": true
+            "О": true
+            "П": true
+            "Р": true
+            "С": true
+            "Т": true
+            "У": true
+            "Ф": true
+            "Х": true
+            "Ц": true
+            "Ч": true
+            "Ш": true
+            "Щ": true
+            "Э": true
+            "Ю": true
+            "Я": true
+        eng:
+          type: object
+          additionalProperties:
+            type: boolean
+          example:
+            "A": false
+            "B": true
+            "C": false
+            "D": false
+            "E": false
+            "F": false
+            "G": true
+            "H": false
+            "I": false
+            "J": false
+            "K": true
+            "L": false
+            "M": true
+            "N": false
+            "O": false
+            "P": true
+            "Q": false
+            "R": true
+            "S": true
+            "T": true
+            "U": false
+            "V": false
+            "W": false
+            "X": false
+            "Y": false
+            "Z": false
+        num:
+          type: object
+          additionalProperties:
+            type: boolean
+          example:
+            "0-9": false
+    LogReadStatisticRequest:
+      type: object
+      properties:
+        statistics:
+          type: array
+          items:
+            $ref: '#/components/schemas/LogReadStatisticEntity'
+    LogReadStatisticEntity:
+      type: object
+      properties:
+        entity:
+          type: string
+          example: 'book'
+        entity_id:
+          type: integer
+          example: 195479
+        page:
+          type: integer
+          example: 20
+  responses:
+    EmptySuccessResponse:
+      description: Success response with empty data
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 200
+              error:
+                type: string
+                example: ""
+              status:
+                type: string
+                example: "OK"
+              type:
+                type: string
+                example: "none"
+              data:
+                type: array
+                items:
+                  type: object
+                maxItems: 0
+    MethodNotAllowedError:
+      description: Method Not Allowed
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 405
+              error:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Операция не поддерживается"
+              status:
+                type: string
+                example: "error"
+              type:
+                type: string
+                example: "object"
+              data:
+                type: array
+                items:
+                  type: object
+                maxItems: 0
+    UnauthorizedError:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 401
+              error:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Пользователь не авторизован"
+                  code:
+                    type: integer
+                    example: 2
+              status:
+                type: string
+                example: "error"
+              type:
+                type: string
+                example: "object"
+              data:
+                type: array
+                items:
+                  type: object
+                maxItems: 0
+    NotFoundResource:
+      description: Not Found response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 404
+              error:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Ресурс не найден"
+              status:
+                type: string
+                example: "error"
+              type:
+                type: string
+                example: "object"
+              data:
+                type: array
+                items:
+                  type: object
+                maxItems: 0
+    BookListSuccessResponse:
+      description: Success response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 200
+              error:
+                type: string
+                example: ""
+              status:
+                type: string
+                example: "OK"
+              type:
+                type: string
+                example: "object"
+              data:
+                type: object
+                properties:
+                  cnt:
+                    type: integer
+                    example: 42
+                  books:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BookListObject'
+    CategoryListSuccessResponse:
+      description: Success response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 200
+              error:
+                type: string
+                example: ""
+              status:
+                type: string
+                example: "OK"
+              type:
+                type: string
+                example: "array"
+              data:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CategoryObject'
+    BookCardSuccessResponse:
+      description: Success response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 200
+              error:
+                type: string
+                example: ""
+              status:
+                type: string
+                example: "OK"
+              type:
+                type: string
+                example: "object"
+              data:
+                $ref: '#/components/schemas/BookCardObject'
+    SearchAllSuccessResponse:
+      description: Success response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 200
+              error:
+                type: string
+                example: ""
+              status:
+                type: string
+                example: "OK"
+              type:
+                type: string
+                example: "object"
+              data:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SearchTypeResults'
+                  cnt:
+                    type: integer
+    SearchBooksSuccessResponse:
+      description: Success response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 200
+              error:
+                type: string
+                example: ""
+              status:
+                type: string
+                example: "OK"
+              type:
+                type: string
+                example: "array"
+              data:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SearchBooksObject'
+    SearchJournalsSuccessResponse:
+      description: Success response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 200
+              error:
+                type: string
+                example: ""
+              status:
+                type: string
+                example: "OK"
+              type:
+                type: string
+                example: "array"
+              data:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SearchJournalsObject'
+    SearchArticlesSuccessResponse:
+      description: Success response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 200
+              error:
+                type: string
+                example: ""
+              status:
+                type: string
+                example: "OK"
+              type:
+                type: string
+                example: "array"
+              data:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SearchArticlesObject'
+    AuthSuccessResponse:
+      description: Success response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 200
+              error:
+                type: string
+                example: ""
+              status:
+                type: string
+                example: "OK"
+              type:
+                type: string
+                example: "object"
+              data:
+                $ref: '#/components/schemas/UserObject'
+    AuthRegistrationRequiredResponse:
+      description: Registration Required
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 401
+              error:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Требуется регистрация"
+              status:
+                type: string
+                example: "error"
+              type:
+                type: string
+                example: "object"
+              data:
+                type: array
+                items:
+                  type: object
+                maxItems: 0
+    AuthGeneralErrorResponse:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 500
+              error:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Авторизация не удалась"
+              status:
+                type: string
+                example: "error"
+              type:
+                type: string
+                example: "object"
+              data:
+                type: array
+                items:
+                  type: object
+                maxItems: 0
+    RegisterGeneralErrorResponse:
+      description: General error response for registration
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 500
+              error:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Регистрация не удалась"
+              status:
+                type: string
+                example: "error"
+              type:
+                type: string
+                example: "object"
+              data:
+                type: array
+                items:
+                  type: object
+                maxItems: 0
+    FirstNameAndLastNameRequiredResponse:
+      description: First name and last name required
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 400
+              error:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Введите фамилию и имя'
+              status:
+                type: string
+                example: "error"
+              type:
+                type: string
+                example: "object"
+              data:
+                type: array
+                items:
+                  type: object
+                maxItems: 0
+    RegistrationNotAllowedResponse:
+      description: Registration not allowed
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 400
+              error:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Для данного типа регистрации необходимо зайти в сеть вашей библиотеки'
+              status:
+                type: string
+                example: "error"
+              type:
+                type: string
+                example: "object"
+              data:
+                type: array
+                items:
+                  type: object
+                maxItems: 0
+    LogOutErrorResponse:
+      description: Logout error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 500
+              error:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Разлогин приложения прошел с ошибкой!'
+              status:
+                type: string
+                example: "error"
+              type:
+                type: string
+                example: "object"
+              data:
+                type: array
+                items:
+                  type: object
+                maxItems: 0
+    RecoverPasswordErrorResponse:
+      description: Error response for password recovery
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 400
+              error:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Запрос на воосстановление не отправлен"
+              status:
+                type: string
+                example: "error"
+              type:
+                type: string
+                example: "object"
+              data:
+                type: array
+                items:
+                  type: object
+                maxItems: 0
+    IpNotFound:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 401
+              error:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Ip не найденн"
+                  code:
+                    type: integer
+                    example: 2
+              status:
+                type: string
+                example: "error"
+              type:
+                type: string
+                example: "object"
+              data:
+                type: array
+                items:
+                  type: object
+                maxItems: 0
+    CannotDeleteGuestUserResponse:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 403
+              error:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Мы не можем нарушить закон гостеприимства и удалить гостя.'
+                  code:
+                    type: integer
+                    example: 2
+              status:
+                type: string
+                example: "error"
+              type:
+                type: string
+                example: "object"
+              data:
+                type: array
+                items:
+                  type: object
+                maxItems: 0
+    SubscriberNameSuccessResponse:
+      description: Success response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 200
+              error:
+                type: string
+                example: ""
+              status:
+                type: string
+                example: "OK"
+              type:
+                type: string
+                example: "object"
+              data:
+                $ref: '#/components/schemas/SubscriberNameObject'
+    CreateDocumentKeySuccessResponse:
+      description: Success response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 200
+              error:
+                type: string
+                example: ""
+              status:
+                type: string
+                example: "OK"
+              type:
+                type: string
+                example: "object"
+              data:
+                $ref: '#/components/schemas/DocumentKeyObject'
+    NoAccessToResourceOrNotAvailableForDownloadError:
+      description: No access to resource or not available for download
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 403
+                  error:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: "Нет доступа к ресурсу"
+                  status:
+                    type: string
+                    example: "error"
+                  type:
+                    type: string
+                    example: "object"
+                  data:
+                    type: array
+                    items: { }
+                    maxItems: 0
+              - type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 403
+                  error:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: "Недоступно для скачивания, обратитесь в ЭБС Лань или воспользуйтесь web-версией"
+                  status:
+                    type: string
+                    example: "error"
+                  type:
+                    type: string
+                    example: "object"
+                  data:
+                    type: array
+                    items: { }
+                    maxItems: 0
+    NotAvailableForDownloadError:
+      description: Not Available For Download
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 403
+              error:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Недоступно для скачивания, обратитесь в ЭБС Лань или воспользуйтесь web-версией"
+              status:
+                type: string
+                example: "error"
+              type:
+                type: string
+                example: "object"
+              data:
+                type: array
+                items: { }
+                maxItems: 0
+    GetMetaSuccessResponse:
+      description: Success response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 200
+              error:
+                type: string
+                example: ""
+              status:
+                type: string
+                example: "OK"
+              type:
+                type: string
+                example: "object"
+              data:
+                $ref: '#/components/schemas/DocumentMetaObject'
+    DownloadEncryptedFileResponse:
+      description: Download Encrypted File
+      headers:
+        Content-Length:
+          description: Размер файла
+          schema:
+            type: integer
+            format: int64
+      content:
+        text/html:
+          schema:
+            type: string
+            format: binary
+    PublisherListSuccessResponse:
+      description: Success response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 200
+              error:
+                type: string
+                example: ""
+              status:
+                type: string
+                example: "OK"
+              type:
+                type: string
+                example: "array"
+              data:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PublisherListObject'
+    ArticleListSuccessResponse:
+      description: Success response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 200
+              error:
+                type: string
+                example: ""
+              status:
+                type: string
+                example: "OK"
+              type:
+                type: string
+                example: "object"
+              data:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ArticleListObject'
+    JournalIssueListSuccessResponse:
+      description: Success response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 200
+              error:
+                type: string
+                example: ""
+              status:
+                type: string
+                example: "OK"
+              type:
+                type: string
+                example: "object"
+              data:
+                $ref: '#/components/schemas/JournalIssueListObject'
+    GetAuthorCharacterMapSuccessResponse:
+      description: Success response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 200
+              error:
+                type: string
+                example: ""
+              status:
+                type: string
+                example: "OK"
+              type:
+                type: string
+                example: "object"
+              data:
+                $ref: '#/components/schemas/AuthorCharacterMapObject'
+
+
+security:
+  - authToken: [ ]
+
+paths:
+  /ebs/1.1/book:
+    get:
+      summary: Получить книгу по ID
+      operationId: BookCard
+      tags:
+        - Книги
+      security:
+        - authToken: [ ]
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: integer
+            example: 183134
+          description: ID книги
+      responses:
+        200:
+          $ref: '#/components/responses/BookCardSuccessResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+  /ebs/1.1/books:
+    get:
+      summary: Получить список книг
+      description: получить список книг
+      operationId: BookList
+      tags:
+        - Книги
+      security:
+        - authToken: [ ]
+      parameters:
+        - in: query
+          name: category
+          schema:
+            type: integer
+            example: 1
+          description: ID Категории
+        - in: query
+          name: subcategory
+          schema:
+            type: integer
+            example: 2
+          description: ID подкатегории
+        - in: query
+          name: publisher
+          schema:
+            type: integer
+            example: 3
+          description: ID издателя
+        - in: query
+          name: author
+          schema:
+            type: string
+            example: "Александр Пушкин"
+          description: Имя автора
+        - in: query
+          name: sort
+          schema:
+            type: string
+            example: "title"
+          description: Поле сортировки
+        - in: query
+          name: syntex
+          schema:
+            type: integer
+            example: 1
+          description: Синтезатор речи (1 - показывать только те книжки у которых есть невизуальное чтение)
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            example: 10
+          description: Лимит записей
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            example: 0
+          description: Смещение пагинатора
+      responses:
+        200:
+          $ref: '#/components/responses/BookListSuccessResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+  /ebs/1.1/categories:
+    get:
+      summary: Получить список категорий
+      operationId: CategoryList
+      tags:
+        - Категории
+      security:
+        - authToken: [ ]
+      parameters:
+        - in: query
+          name: type
+          schema:
+            type: integer
+            example: 1
+          description: Тип документа. 1 - Книга, 2 - Журнал
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            example: 10
+          description: Лимит записей
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            example: 0
+          description: Смещение пагинатора
+        - in: query
+          name: syntex
+          schema:
+            type: integer
+            example: 1
+          description: Синтезатор речи (1 - показывать только те книжки у которых есть невизуальное чтение)
+      responses:
+        200:
+          $ref: '#/components/responses/CategoryListSuccessResponse'
+  /ebs/1.1/subcategories:
+    get:
+      summary: Получить список подкатегорий
+      operationId: SubCategoryList
+      tags:
+        - Категории
+      security:
+        - authToken: [ ]
+      parameters:
+        - in: query
+          name: type
+          schema:
+            type: integer
+            example: 1
+          description: Тип документа. 1 - Книга, 2 - Журнал
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            example: 10
+          description: Лимит записей
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            example: 0
+          description: Смещение пагинатора
+        - in: query
+          name: syntex
+          schema:
+            type: integer
+            example: 1
+          description: Синтезатор речи (1 - показывать только те книжки у которых есть невизуальное чтение)
+      responses:
+        200:
+          $ref: '#/components/responses/CategoryListSuccessResponse'
+
+  /ebs/1.1/users/current:
+    post:
+      summary: Авторизоваться в аккаунт через Email
+      operationId: LogInByEmail
+      tags:
+        - Пользователь
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: "ivan.p@yandex.ru"
+                password:
+                  type: string
+                  example: "password123"
+      responses:
+        200:
+          $ref: '#/components/responses/AuthSuccessResponse'
+        401:
+          $ref: '#/components/responses/AuthRegistrationRequiredResponse'
+        500:
+          $ref: '#/components/responses/AuthGeneralErrorResponse'
+    delete:
+      summary: Logout из аккаунта
+      operationId: LogOutSocial
+      tags:
+        - Пользователь
+      responses:
+        200:
+          $ref: '#/components/responses/EmptySuccessResponse'
+        500:
+          $ref: '#/components/responses/LogOutErrorResponse'
+  /ebs/1.1/users/current/social:
+    post:
+      summary: Авторизоваться в аккаунт через соц сети
+      operationId: LogInBySocial
+      tags:
+        - Пользователь
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                network:
+                  type: string
+                  example: "apple"
+                token_social:
+                  type: string
+                  example: "eyJhbGciOiJFUzI1NiIsImtpZCI6IjABCDEFG1234567890HIJKLMNOPQRS1234567TUVXYZ8901234ABCDEFGHIJKL56789MNO"
+      responses:
+        200:
+          $ref: '#/components/responses/AuthSuccessResponse'
+        401:
+          $ref: '#/components/responses/AuthRegistrationRequiredResponse'
+        500:
+          $ref: '#/components/responses/AuthGeneralErrorResponse'
+    delete:
+      summary: Logout из аккаунта соц сетей
+      operationId: LogOutSocial
+      tags:
+        - Пользователь
+      responses:
+        200:
+          $ref: '#/components/responses/EmptySuccessResponse'
+        500:
+          $ref: '#/components/responses/LogOutErrorResponse'
+  /ebs/1.1/users/register:
+    post:
+      summary: Регистрация аккаунта через Email
+      operationId: RegisterByEmail
+      tags:
+        - Пользователь
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Ivan Ivanov Ivanovich"
+                email:
+                  type: string
+                  example: "ivan@mail.com"
+                password:
+                  type: string
+                  example: "12345678"
+      responses:
+        200:
+          $ref: '#/components/responses/EmptySuccessResponse'
+        400:
+          $ref: '#/components/responses/FirstNameAndLastNameRequiredResponse'
+        500:
+          $ref: '#/components/responses/RegisterGeneralErrorResponse'
+  /ebs/1.1/users/register/social:
+    post:
+      summary: Регистрация аккаунта через соц сети
+      operationId: RegisterBySocial
+      tags:
+        - Пользователь
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                lastName:
+                  type: string
+                  example: "Ivanov"
+                firstName:
+                  type: string
+                  example: "Ivan"
+                email:
+                  type: string
+                  example: "ivan@mail.com"
+                password:
+                  type: string
+                  example: "12345678"
+                network:
+                  type: string
+                  example: "apple"
+                token_social:
+                  type: string
+                  example: "eyJhbGciOiJFUzI1NiIsImtpZCI6IjABCDEFG1234567890HIJKLMNOPQRS1234567TUVXYZ8901234ABCDEFGHIJKL56789MNO"
+                inviteCode:
+                  type: string
+                  example: "stS7YOlxmGDl"
+      responses:
+        200:
+          $ref: '#/components/responses/AuthSuccessResponse'
+        405:
+          $ref: '#/components/responses/RegistrationNotAllowedResponse'
+        500:
+          $ref: '#/components/responses/RegisterGeneralErrorResponse'
+  /ebs/1.1/users/recovery:
+    post:
+      summary: Восстановить пароль
+      operationId: RecoverPassword
+      tags:
+        - Пользователь
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: "ivan.p@yandex.ru"
+      responses:
+        200:
+          $ref: '#/components/responses/EmptySuccessResponse'
+        400:
+          $ref: '#/components/responses/RecoverPasswordErrorResponse'
+  /ebs/1.1/users/check_ip:
+    get:
+      summary: Проверить IP подписчика
+      operationId: CheckIp
+      tags:
+        - Пользователь
+      responses:
+        200:
+          $ref: '#/components/responses/SubscriberNameSuccessResponse'
+        401:
+          $ref: '#/components/responses/IpNotFound'
+  /ebs/1.1/users/check_invite:
+    get:
+      summary: Проверить валидность инвайта
+      operationId: CheckInvite
+      tags:
+        - Пользователь
+      security:
+        - authToken: [ ]
+      parameters:
+        - in: query
+          name: invite
+          required: true
+          schema:
+            type: string
+            example: 123456-123456
+            minLength: 9
+            maxLength: 15
+          description: Инвайт код из библиотеки
+      responses:
+        200:
+          $ref: '#/components/responses/EmptySuccessResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+  /ebs/1.1/users/social/delete:
+    put:
+      summary: Выполнить запрос на деактивацию текущего пользователя
+      operationId: DeactivateUser
+      tags:
+        - Пользователь
+      security:
+        - authToken: [ ]
+      responses:
+        200:
+          $ref: '#/components/responses/EmptySuccessResponse'
+        403:
+          $ref: '#/components/responses/CannotDeleteGuestUserResponse'
+  /ebs/1.1/search:
+    get:
+      summary: Общий поиск
+      operationId: SearchAll
+      tags:
+        - Поиск
+      security:
+        - authToken: [ ]
+      parameters:
+        - in: query
+          name: query
+          schema:
+            type: string
+            example: "Поисковой запрос"
+          description: Текст поискового запроса
+        - in: query
+          name: category
+          schema:
+            type: integer
+            example: 945
+          description: ID Категории
+        - in: query
+          name: syntex
+          schema:
+            type: integer
+            example: 1
+          description: Синтезатор речи (1 - показывать только те книжки у которых есть невизуальное чтение)
+      responses:
+        200:
+          $ref: '#/components/responses/SearchAllSuccessResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+  /ebs/1.1/search/books:
+    get:
+      summary: Поиск книг
+      operationId: SearchBooks
+      tags:
+        - Поиск
+      security:
+        - authToken: [ ]
+      parameters:
+        - in: query
+          name: type
+          schema:
+            type: integer
+            enum: [ 1, 2, 8, 10 ]
+            example: 1
+          description: |
+            Тип поиска. Возможные значения:
+            1 - Найдено в названиях книг,
+            2 - Найдено в авторах книг,
+            8 - Найдено в текстах книг,
+            10 - Найдено в оглавлении книг
+        - in: query
+          name: query
+          schema:
+            type: string
+            example: "Science"
+          description: Текст поискового запроса
+        - in: query
+          name: category
+          schema:
+            type: integer
+            example: 917
+          description: ID Категории
+        - in: query
+          name: syntex
+          schema:
+            type: integer
+            example: 0
+          description: Синтезатор речи (0 - показывать все книги, 1 - только те, у которых есть невизуальное чтение)
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            example: 10
+          description: Лимит записей
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            example: 0
+          description: Смещение пагинатора
+      responses:
+        200:
+          $ref: '#/components/responses/SearchBooksSuccessResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        405:
+          $ref: '#/components/responses/MethodNotAllowedError'
+  /ebs/1.1/search/journals:
+    get:
+      summary: Поиск журналов
+      operationId: SearchJournals
+      tags:
+        - Поиск
+      security:
+        - authToken: [ ]
+      parameters:
+        - in: query
+          name: type
+          schema:
+            type: integer
+            enum: [ 4 ]
+            example: 4
+          description: |
+            Тип поиска. Возможные значения:
+            4 - Найдено в названиях журналов
+        - in: query
+          name: query
+          schema:
+            type: string
+            example: "Science"
+          description: Текст поискового запроса
+        - in: query
+          name: category
+          schema:
+            type: integer
+            example: 917
+          description: ID Категории
+        - in: query
+          name: syntex
+          schema:
+            type: integer
+            example: 0
+          description: Синтезатор речи (0 - показывать все журналы, 1 - только те, у которых есть невизуальное чтение)
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            example: 10
+          description: Лимит записей
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            example: 0
+          description: Смещение пагинатора
+      responses:
+        200:
+          $ref: '#/components/responses/SearchJournalsSuccessResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        405:
+          $ref: '#/components/responses/MethodNotAllowedError'
+  /ebs/1.1/search/articles:
+    get:
+      summary: Поиск статей
+      operationId: SearchArticles
+      tags:
+        - Поиск
+      security:
+        - authToken: [ ]
+      parameters:
+        - in: query
+          name: type
+          schema:
+            type: integer
+            enum: [ 5, 6, 7, 9 ]
+            example: 9
+          description: |
+            Тип поиска. Возможные значения:
+            5 - Найдено в авторах статей,
+            6 - Найдено в заголовках статей,
+            7 - Найдено в статьях по ключевым словам,
+            9 - Найдено в текстах статей
+        - in: query
+          name: query
+          schema:
+            type: string
+            example: "Science"
+          description: Текст поискового запроса
+        - in: query
+          name: category
+          schema:
+            type: integer
+            example: 917
+          description: ID Категории
+        - in: query
+          name: syntex
+          schema:
+            type: integer
+            example: 0
+          description: Синтезатор речи (0 - показывать все статьи, 1 - только те, у которых есть невизуальное чтение)
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            example: 10
+          description: Лимит записей
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            example: 0
+          description: Смещение пагинатора
+      responses:
+        200:
+          $ref: '#/components/responses/SearchArticlesSuccessResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        405:
+          $ref: '#/components/responses/MethodNotAllowedError'
+  /ebs/1.1/book/key:
+    get:
+      summary: Получить ключ книги по ID
+      operationId: CreateBookKey
+      tags:
+        - Книги
+      security:
+        - authToken: [ ]
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: integer
+            example: 192702
+          description: ID книги
+      responses:
+        200:
+          $ref: '#/components/responses/CreateDocumentKeySuccessResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/NoAccessToResourceOrNotAvailableForDownloadError'
+        404:
+          $ref: '#/components/responses/NotFoundResource'
+  /ebs/1.1/book/meta:
+    get:
+      summary: Получить метаданные книги по ID
+      operationId: GetBookMeta
+      tags:
+        - Книги
+      security:
+        - authToken: [ ]
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: integer
+            example: 192702
+          description: ID книги
+      responses:
+        200:
+          $ref: '#/components/responses/GetMetaSuccessResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/NotAvailableForDownloadError'
+        404:
+          $ref: '#/components/responses/NotFoundResource'
+  /ebs/1.1/book/pdf:
+    get:
+      summary: Скачать зашифрованный Pdf файл книги по ID
+      operationId: DownloadBookPdf
+      tags:
+        - Книги
+      security:
+        - authToken: [ ]
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: integer
+            example: 192702
+          description: ID книги
+      responses:
+        200:
+          $ref: '#/components/responses/DownloadEncryptedFileResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/NotAvailableForDownloadError'
+  /ebs/1.1/book/epub:
+    get:
+      summary: Скачать зашифрованный Epub файл книги по ID
+      operationId: DownloadBookEpub
+      tags:
+        - Книги
+      security:
+        - authToken: [ ]
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: integer
+            example: 192702
+          description: ID книги
+      responses:
+        200:
+          $ref: '#/components/responses/DownloadEncryptedFileResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/NotAvailableForDownloadError'
+  /ebs/1.1/book/text:
+    get:
+      summary: Скачать зашифрованный Text файл книги по ID
+      operationId: DownloadBookText
+      tags:
+        - Книги
+      security:
+        - authToken: [ ]
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: integer
+            example: 192702
+          description: ID книги
+      responses:
+        200:
+          $ref: '#/components/responses/DownloadEncryptedFileResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/NotAvailableForDownloadError'
+  /ebs/1.1/book/audio:
+    get:
+      summary: Скачать зашифрованный Audio файл книги по ID
+      operationId: DownloadBookAudio
+      tags:
+        - Книги
+      security:
+        - authToken: [ ]
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: integer
+            example: 192702
+          description: ID книги
+      responses:
+        200:
+          $ref: '#/components/responses/DownloadEncryptedFileResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/NotAvailableForDownloadError'
+  /ebs/1.1/articles:
+    get:
+      summary: Получить статьи журнала по ID выпуска
+      operationId: GetArticles
+      tags:
+        - Статьи
+      security:
+        - authToken: [ ]
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: integer
+            example: 292672
+          description: ID выпуска
+      responses:
+        200:
+          $ref: '#/components/responses/ArticleListSuccessResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+  /ebs/1.1/article/key:
+    get:
+      summary: Получить ключ статьи по ID
+      operationId: CreateArticleKey
+      tags:
+        - Статьи
+      security:
+        - authToken: [ ]
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: integer
+            example: 192702
+          description: ID статьи
+      responses:
+        200:
+          $ref: '#/components/responses/CreateDocumentKeySuccessResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/NoAccessToResourceOrNotAvailableForDownloadError'
+        404:
+          $ref: '#/components/responses/NotFoundResource'
+  /ebs/1.1/article/meta:
+    get:
+      summary: Получить метаданные статьи по ID
+      operationId: GetArticleMeta
+      tags:
+        - Статьи
+      security:
+        - authToken: [ ]
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: integer
+            example: 192702
+          description: ID статьи
+      responses:
+        200:
+          $ref: '#/components/responses/GetMetaSuccessResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/NotAvailableForDownloadError'
+        404:
+          $ref: '#/components/responses/NotFoundResource'
+  /ebs/1.1/article/pdf:
+    get:
+      summary: Скачать зашифрованный Pdf файл статьи по ID
+      operationId: DownloadArticlePdf
+      tags:
+        - Статьи
+      security:
+        - authToken: [ ]
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: integer
+            example: 192702
+          description: ID статьи
+      responses:
+        200:
+          $ref: '#/components/responses/DownloadEncryptedFileResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/NotAvailableForDownloadError'
+  /ebs/1.1/article/epub:
+    get:
+      summary: Скачать зашифрованный Epub файл статьи по ID
+      operationId: DownloadArticleEpub
+      tags:
+        - Статьи
+      security:
+        - authToken: [ ]
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: integer
+            example: 192702
+          description: ID статьи
+      responses:
+        200:
+          $ref: '#/components/responses/DownloadEncryptedFileResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/NotAvailableForDownloadError'
+  /ebs/1.1/article/text:
+    get:
+      summary: Скачать зашифрованный Text файл статьи по ID
+      operationId: DownloadArticleText
+      tags:
+        - Статьи
+      security:
+        - authToken: [ ]
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: integer
+            example: 192702
+          description: ID статьи
+      responses:
+        200:
+          $ref: '#/components/responses/DownloadEncryptedFileResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/NotAvailableForDownloadError'
+  /ebs/1.1/article/audio:
+    get:
+      summary: Скачать зашифрованный Audio файл статьи по ID
+      operationId: DownloadArticleAudio
+      tags:
+        - Статьи
+      security:
+        - authToken: [ ]
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: integer
+            example: 192702
+          description: ID статьи
+      responses:
+        200:
+          $ref: '#/components/responses/DownloadEncryptedFileResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        403:
+          $ref: '#/components/responses/NotAvailableForDownloadError'
+  /ebs/1.1/sync/all:
+    post:
+      summary: Синхронизация данных
+      operationId: SyncAll
+      tags:
+        - Синхронизация
+      security:
+        - authToken: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SyncAllRequest'
+      responses:
+        200:
+          description: Успешная синхронизация
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SyncAllResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+  /ebs/1.1/authors:
+    get:
+      summary: Получить карту символов доступных авторов
+      operationId: GetAuthorCharacterMap
+      tags:
+        - Авторы
+      security:
+        - authToken: [ ]
+      parameters:
+        - in: query
+          name: catId
+          schema:
+            type: integer
+          description: ID категории
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            example: 10
+          description: Лимит записей
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            example: 0
+          description: Смещение пагинатора
+        - in: query
+          name: publisherId
+          schema:
+            type: integer
+          description: ID издателя
+        - in: query
+          name: subCatId
+          schema:
+            type: integer
+          description: ID подкатегории
+        - in: query
+          name: syntex
+          schema:
+            type: integer
+            example: 1
+          description: Синтезатор речи (1 - показывать только те книжки у которых есть невизуальное чтение)
+      responses:
+        200:
+          $ref: '#/components/responses/GetAuthorCharacterMapSuccessResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+  /ebs/1.1/publishers:
+    get:
+      summary: Получить список издателей
+      operationId: GetPublisherList
+      tags:
+        - Издатели
+      security:
+        - authToken: [ ]
+      parameters:
+        - in: query
+          name: type
+          schema:
+            type: integer
+            example: 1
+          description: Тип документа. 1 - Книга, 2 - Журнал
+        - in: query
+          name: author
+          schema:
+            type: string
+            example: "Александр Пушкин"
+          description: Имя автора
+        - in: query
+          name: catId
+          schema:
+            type: integer
+          description: ID категории
+        - in: query
+          name: subCatId
+          schema:
+            type: integer
+          description: ID подкатегории
+        - in: query
+          name: syntex
+          schema:
+            type: integer
+            example: 1
+          description: Синтезатор речи (1 - показывать только те книжки у которых есть невизуальное чтение)
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          description: Лимит записей
+        - in: query
+          name: offset
+          schema:
+            type: integer
+          description: Смещение пагинатора
+      responses:
+        200:
+          $ref: '#/components/responses/PublisherListSuccessResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+  /ebs/1.1/issue:
+    get:
+      summary: Получить выпуски по ID журнала
+      operationId: GetJournalIssueList
+      tags:
+        - Журналы
+      security:
+        - authToken: [ ]
+      parameters:
+        - in: query
+          name: id
+          required: true
+          schema:
+            type: integer
+            example: 2374
+          description: ID журнала
+      responses:
+        200:
+          $ref: '#/components/responses/JournalIssueListSuccessResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        404:
+          $ref: '#/components/responses/NotFoundResource'
+  /ebs/1.1/stat/read:
+    post:
+      summary: Сохранить набор событий чтения книг и журналов
+      operationId: LogReadStatistic
+      tags:
+        - Статистика
+      security:
+        - authToken: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LogReadStatisticRequest'
+      responses:
+        200:
+          $ref: '#/components/responses/EmptySuccessResponse'
+        401:
+          $ref: '#/components/responses/UnauthorizedError'

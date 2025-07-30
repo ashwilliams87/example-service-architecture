@@ -1,0 +1,3 @@
+<?php //App%255CContracts%255CDTOs%255CFoundDocumentDTOInterface
+
+return [PHP_INT_MAX, []];

@@ -1,0 +1,11 @@
+actor: FunctionalTester
+suite_namespace: Tests\Functional
+modules:
+    # enable helpers as array
+    enabled:
+      - Asserts
+      - Db:
+          dsn: 'mysql:host=192.168.0.10;dbname=ebs'
+          user: 'root'
+          password: 'ever2PAC|MAC10'
+          cleanup: true

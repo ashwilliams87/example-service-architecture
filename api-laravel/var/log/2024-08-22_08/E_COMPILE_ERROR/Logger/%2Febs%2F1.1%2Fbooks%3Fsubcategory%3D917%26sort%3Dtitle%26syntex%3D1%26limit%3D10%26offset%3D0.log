@@ -1,0 +1,26 @@
+[08:36:26 1724315786.4899] 
+ Ice\Exception\Error: Declaration of Lan\Transformers\Book\BookListPaginatedTransformer::getDtoTransformer(): Lan\Transformers\Book\BookCardListTransformer must be compatible with Lan\Contracts\Transformers\AbstractPaginatedTransformer::getDtoTransformer(): Lan\Contracts\Transformers\AbstractTransformer [peak: 34 MB]  
+ /var/www/html/api-laravel/Lan/Transformers/Book/BookListPaginatedTransformer.php:26  
+ 
+#0 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:276  
+	Ice\Core\Logger->createException('Declaration of ...', '/var/www/html/a...', 26, NULL, Array, 64) 
+#1 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:247  
+	Ice\Core\Logger->error('Declaration of ...', '/var/www/html/a...', 26, NULL, Array, 64) 
+#2 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:197  
+	Ice\Core\Logger::errorHandler:64, 'Declaration of ...', '/var/www/html/a...', 26, Array) 
+#3 [internal function]: Ice\Core\Logger::shutdownHandler() 
+#4 {main} 
+ 
+[08:38:09 1724315889.7848] 
+ Ice\Exception\Error: Could not check compatibility between Lan\Transformers\Book\BookListPaginatedTransformer::getDtoTransformer(): Lan\Transformers\Book\Abstra and Lan\Contracts\Transformers\AbstractPaginatedTransformer::getDtoTransformer(): Lan\Contracts\Transformers\AbstractTransformer, because class Lan\Transformers\Book\Abstra is not available [peak: 34 MB]  
+ /var/www/html/api-laravel/Lan/Transformers/Book/BookListPaginatedTransformer.php:26  
+ 
+#0 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:276  
+	Ice\Core\Logger->createException('Could not check...', '/var/www/html/a...', 26, NULL, Array, 64) 
+#1 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:247  
+	Ice\Core\Logger->error('Could not check...', '/var/www/html/a...', 26, NULL, Array, 64) 
+#2 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:197  
+	Ice\Core\Logger::errorHandler:64, 'Could not check...', '/var/www/html/a...', 26, Array) 
+#3 [internal function]: Ice\Core\Logger::shutdownHandler() 
+#4 {main} 
+ 

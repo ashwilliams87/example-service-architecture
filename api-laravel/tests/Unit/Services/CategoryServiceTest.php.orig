@@ -1,0 +1,436 @@
+<?php
+
+namespace Tests\Unit\Services;
+
+use App\Models\Types\DocumentType;
+use Codeception\Stub\Expected;
+use Codeception\Test\Unit;
+use Ice\Core\QueryResult;
+use Lan\DTOs\Category\Requests\CategoryListRequestDTO;
+use Lan\DTOs\Category\Requests\SubCategoryListRequestDTO;
+use Lan\DTOs\Category\Responses\CategoryListResponseDTO;
+use Lan\DTOs\Category\Responses\PaginatedCategoryListResponseDTO;
+use Lan\DTOs\Category\Responses\PaginatedSubCategoryListResponseDTO;
+use Lan\DTOs\Category\Responses\SubCategoryListResponseDTO;
+use Lan\Repositories\Ice\CategoryRepository;
+use Lan\Services\CategoryService;
+use Tests\Support\UnitTester;
+
+class CategoryServiceTest extends Unit
+{
+    protected UnitTester $tester;
+
+    private CategoryService $categoryService;
+
+    private $categoryRepository;
+
+    protected function _before()
+    {
+        $this->categoryRepository = $this->createMock(CategoryRepository::class);
+        $this->categoryService = new CategoryService(
+            categoryRepository: $this->categoryRepository
+        );
+    }
+    private function prepareArrayRowsData()
+    {
+        $data = [];
+        for ($i = 1; $i <= 50; $i++) {
+            $data[] = (object) [
+                'id' => $i,
+                'title' => 'Category ' . $i,
+            ];
+        }
+        return $data;
+    }
+
+    private function prepareQueryResultData()
+    {
+        $data = [];
+        for ($i = 1; $i <= 50; $i++) {
+            $data[] =         [
+                "all_count" => 298,
+                "available" => 1,
+                "id" => $i,
+                "title" => 'Category ' . $i,
+            ];
+        }
+
+        $queryResultMock = $this->createMock(QueryResult::class);
+
+        $queryResultMock->method('getRows')->willReturn($data);
+
+        return $queryResultMock;
+    }
+
+    /**
+     * Тестирует метод getBookCategories.
+     * Проверяет, что метод возвращает ожидаемые данные категорий книг с учетом переданных ограничений.
+     *
+     * @return void
+     */
+    public function testGetBookCategories()
+    {
+        $offset = 5;
+        $limit = 5;
+        $requestDTO = new CategoryListRequestDTO(
+            type: DocumentType::BOOK,
+            limit: $limit,
+            offset: $offset,
+            syntex: 1
+        );
+
+        $returnedRowsFromRepository = $this->prepareArrayRowsData();
+
+        $this->categoryRepository
+            ->expects($this->once())
+            ->method('getBookCategories')
+            ->willReturn($returnedRowsFromRepository);
+
+        $expectedServiceResult = [];
+        for ($i = $offset + 1; $i <= $offset + $limit; $i++) {
+            $expectedServiceResult[] = new CategoryListResponseDTO(
+                id: $i,
+                title: 'Category ' . $i,
+                active: true
+            );
+        }
+
+        $result = $this->categoryService->getBookCategories($requestDTO);
+
+        $this->assertInstanceOf(PaginatedCategoryListResponseDTO::class, $result);
+        $this->assertEquals($expectedServiceResult, $result->getDtoItems());
+    }
+
+    /**
+     * Тестирует метод getJournalCategories.
+     * Проверяет, что метод возвращает ожидаемые данные категорий журналов с учетом переданных ограничений.
+     *
+     * @return void
+     */
+    public function testGetJournalCategories()
+    {
+        $offset = 5;
+        $limit = 5;
+        $requestDTO = new CategoryListRequestDTO(
+            type: DocumentType::JOURNAL,
+            limit: $limit,
+            offset: $offset,
+            syntex: 1
+        );
+
+        $returnedRowsFromRepository = $this->prepareQueryResultData();
+
+        $this->categoryRepository
+            ->expects($this->once())
+            ->method('getJournalCategories')
+            ->willReturn($returnedRowsFromRepository);
+
+        $expectedServiceResult = [];
+        for ($i = $offset + 1; $i <= $offset + $limit; $i++) {
+            $expectedServiceResult[] = new CategoryListResponseDTO(
+                id: $i,
+                title: 'Category ' . $i,
+                active: true
+            );
+        }
+
+        $result = $this->categoryService->getJournalCategories($requestDTO);
+
+        $this->assertInstanceOf(PaginatedCategoryListResponseDTO::class, $result);
+        $this->assertEquals($expectedServiceResult, $result->getDtoItems());
+    }
+
+    /**
+     * Тестирует метод getAllCategories.
+     * Проверяет, что метод возвращает ожидаемые данные всех категорий с учетом переданных ограничений.
+     *
+     * @return void
+     */
+    public function testGetAllCategories()
+    {
+        $offset = 5;
+        $limit = 5;
+        $requestDTO = new CategoryListRequestDTO(
+            type: 0,
+            limit: $limit,
+            offset: $offset,
+            syntex: 1
+        );
+
+        $returnedRowsFromRepository = $this->prepareArrayRowsData();
+
+        $this->categoryRepository
+            ->expects($this->once())
+            ->method('getAllCategories')
+            ->willReturn($returnedRowsFromRepository);
+
+        $expectedServiceResult = [];
+        for ($i = $offset + 1; $i <= $offset + $limit; $i++) {
+            $expectedServiceResult[] = new CategoryListResponseDTO(
+                id: $i,
+                title: 'Category ' . $i,
+                active: true
+            );
+        }
+
+        $result = $this->categoryService->getAllCategories($requestDTO);
+
+        $this->assertInstanceOf(PaginatedCategoryListResponseDTO::class, $result);
+        $this->assertEquals($expectedServiceResult, $result->getDtoItems());
+    }
+
+    public function testGetSubCategoriesWithPrivateSubcategoriesRequest(){
+        $requestDTO = new SubCategoryListRequestDTO(
+            type: 1,
+            categoryId: 0, // при значении 0 должны возвращаться приватные подкатегории
+            limit: 100,
+            offset: 1,
+            syntex: 1,
+            publisherId: 0,
+            author: '',
+        );
+
+        $categoryRepositoryMock = $this->make(CategoryRepository::class, [
+            'getPrivateSubCategories' => Expected::once(function (SubCategoryListRequestDTO $requestDTO) {
+                return $this->make(QueryResult::class, [
+                    'getRows' => Expected::once(function () {
+                        $data = [];
+                        for ($i = 1; $i <= 50; $i++) {
+                            $data[] = [
+                                "id" => $i,
+                                "title" => "Test SubCategory Title " . $i,
+                            ];
+                        }
+                        return $data;
+                    }),
+                ]);
+            }),
+            'getBookSubCategories' => Expected::never(),
+            'getJournalSubCategories' => Expected::never(),
+            'getAllSubCategories' => Expected::never(),
+        ]);
+
+        $expectedDTOs = [];
+        for ($i = 1; $i <= 50; $i++) {
+            $expectedDTOs[] = SubCategoryListResponseDTO::create(
+                id: $i,
+                title: "Test SubCategory Title " . $i,
+            );
+        }
+
+        $expectedServiceResult = new PaginatedSubCategoryListResponseDTO(dtoItems: $expectedDTOs);
+
+        $publisherService = new CategoryService(
+            categoryRepository: $categoryRepositoryMock,
+        );
+
+        $result = $publisherService->getSubCategories($requestDTO);
+
+        $this->assertInstanceOf(PaginatedSubCategoryListResponseDTO::class, $result);
+        $this->assertEquals($expectedServiceResult, $result);
+    }
+
+    public function testGetSubCategoriesWithBookSubcategoriesSpecifiedInTypeRequest(){
+        $requestDTO = new SubCategoryListRequestDTO(
+            type: 1, // при значении 1 должны возвращаться подкатегории книг
+            categoryId: 917,
+            limit: 100,
+            offset: 1,
+            syntex: 1,
+            publisherId: 0,
+            author: '',
+        );
+
+        $categoryRepositoryMock = $this->make(CategoryRepository::class, [
+            'getBookSubCategories' => Expected::once(function (SubCategoryListRequestDTO $requestDTO) {
+                return $this->make(QueryResult::class, [
+                    'getRows' => Expected::once(function () {
+                        $data = [];
+                        for ($i = 1; $i <= 50; $i++) {
+                            $data[] = [
+                                "id" => $i,
+                                "title" => "Test SubCategory Title " . $i,
+                            ];
+                        }
+                        return $data;
+                    }),
+                ]);
+            }),
+            'getPrivateSubCategories' => Expected::never(),
+            'getJournalSubCategories' => Expected::never(),
+            'getAllSubCategories' => Expected::never(),
+        ]);
+
+        $expectedDTOs = [];
+        for ($i = 1; $i <= 50; $i++) {
+            $expectedDTOs[] = SubCategoryListResponseDTO::create(
+                id: $i,
+                title: "Test SubCategory Title " . $i,
+            );
+        }
+
+        $expectedServiceResult = new PaginatedSubCategoryListResponseDTO(dtoItems: $expectedDTOs);
+
+        $publisherService = new CategoryService(
+            categoryRepository: $categoryRepositoryMock,
+        );
+
+        $result = $publisherService->getSubCategories($requestDTO);
+
+        $this->assertInstanceOf(PaginatedSubCategoryListResponseDTO::class, $result);
+        $this->assertEquals($expectedServiceResult, $result);
+    }
+
+    public function testGetSubCategoriesWithBookSubcategoriesSpecifiedInSyntexRequest(){
+        $requestDTO = new SubCategoryListRequestDTO(
+            type: 0,
+            categoryId: 917,
+            limit: 100,
+            offset: 1,
+            syntex: 1, // при значении 1 должны возвращаться подкатегории книг
+            publisherId: 0,
+            author: '',
+        );
+
+        $categoryRepositoryMock = $this->make(CategoryRepository::class, [
+            'getBookSubCategories' => Expected::once(function (SubCategoryListRequestDTO $requestDTO) {
+                return $this->make(QueryResult::class, [
+                    'getRows' => Expected::once(function () {
+                        $data = [];
+                        for ($i = 1; $i <= 50; $i++) {
+                            $data[] = [
+                                "id" => $i,
+                                "title" => "Test SubCategory Title " . $i,
+                            ];
+                        }
+                        return $data;
+                    }),
+                ]);
+            }),
+            'getPrivateSubCategories' => Expected::never(),
+            'getJournalSubCategories' => Expected::never(),
+            'getAllSubCategories' => Expected::never(),
+        ]);
+
+        $expectedDTOs = [];
+        for ($i = 1; $i <= 50; $i++) {
+            $expectedDTOs[] = SubCategoryListResponseDTO::create(
+                id: $i,
+                title: "Test SubCategory Title " . $i,
+            );
+        }
+
+        $expectedServiceResult = new PaginatedSubCategoryListResponseDTO(dtoItems: $expectedDTOs);
+
+        $publisherService = new CategoryService(
+            categoryRepository: $categoryRepositoryMock,
+        );
+
+        $result = $publisherService->getSubCategories($requestDTO);
+
+        $this->assertInstanceOf(PaginatedSubCategoryListResponseDTO::class, $result);
+        $this->assertEquals($expectedServiceResult, $result);
+    }
+
+    public function testGetSubCategoriesWithJournalSubcategoriesRequest(){
+        $requestDTO = new SubCategoryListRequestDTO(
+            type: 2, // при значении 2 должны возвращаться подкатегории журналов
+            categoryId: 917,
+            limit: 100,
+            offset: 1,
+            syntex: 0,
+            publisherId: 0,
+            author: '',
+        );
+
+        $categoryRepositoryMock = $this->make(CategoryRepository::class, [
+            'getJournalSubCategories' => Expected::once(function (SubCategoryListRequestDTO $requestDTO) {
+                return $this->make(QueryResult::class, [
+                    'getRows' => Expected::once(function () {
+                        $data = [];
+                        for ($i = 1; $i <= 50; $i++) {
+                            $data[] = [
+                                "id" => $i,
+                                "title" => "Test SubCategory Title " . $i,
+                            ];
+                        }
+                        return $data;
+                    }),
+                ]);
+            }),
+            'getPrivateSubCategories' => Expected::never(),
+            'getBookSubCategories' => Expected::never(),
+            'getAllSubCategories' => Expected::never(),
+        ]);
+
+        $expectedDTOs = [];
+        for ($i = 1; $i <= 50; $i++) {
+            $expectedDTOs[] = SubCategoryListResponseDTO::create(
+                id: $i,
+                title: "Test SubCategory Title " . $i,
+            );
+        }
+
+        $expectedServiceResult = new PaginatedSubCategoryListResponseDTO(dtoItems: $expectedDTOs);
+
+        $publisherService = new CategoryService(
+            categoryRepository: $categoryRepositoryMock,
+        );
+
+        $result = $publisherService->getSubCategories($requestDTO);
+
+        $this->assertInstanceOf(PaginatedSubCategoryListResponseDTO::class, $result);
+        $this->assertEquals($expectedServiceResult, $result);
+    }
+
+    public function testGetSubCategoriesWithAllSubcategoriesRequest(){
+        $requestDTO = new SubCategoryListRequestDTO(
+            type: 0, // при не ожидаемом значении, должны возвращаться все подкатегории
+            categoryId: 917,
+            limit: 100,
+            offset: 1,
+            syntex: 0,
+            publisherId: 0,
+            author: '',
+        );
+
+        $categoryRepositoryMock = $this->make(CategoryRepository::class, [
+            'getAllSubCategories' => Expected::once(function (SubCategoryListRequestDTO $requestDTO) {
+                return $this->make(QueryResult::class, [
+                    'getRows' => Expected::once(function () {
+                        $data = [];
+                        for ($i = 1; $i <= 50; $i++) {
+                            $data[] = [
+                                "id" => $i,
+                                "title" => "Test SubCategory Title " . $i,
+                            ];
+                        }
+                        return $data;
+                    }),
+                ]);
+            }),
+            'getPrivateSubCategories' => Expected::never(),
+            'getBookSubCategories' => Expected::never(),
+            'getJournalSubCategories' => Expected::never(),
+        ]);
+
+        $expectedDTOs = [];
+        for ($i = 1; $i <= 50; $i++) {
+            $expectedDTOs[] = SubCategoryListResponseDTO::create(
+                id: $i,
+                title: "Test SubCategory Title " . $i,
+            );
+        }
+
+        $expectedServiceResult = new PaginatedSubCategoryListResponseDTO(dtoItems: $expectedDTOs);
+
+        $publisherService = new CategoryService(
+            categoryRepository: $categoryRepositoryMock,
+        );
+
+        $result = $publisherService->getSubCategories($requestDTO);
+
+        $this->assertInstanceOf(PaginatedSubCategoryListResponseDTO::class, $result);
+        $this->assertEquals($expectedServiceResult, $result);
+    }
+}

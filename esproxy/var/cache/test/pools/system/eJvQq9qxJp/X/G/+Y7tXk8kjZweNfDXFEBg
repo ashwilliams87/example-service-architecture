@@ -1,0 +1,3 @@
+<?php //App%255CRequest%255CBookContentSearchRequest%2524similarityTopK
+
+return [PHP_INT_MAX, []];

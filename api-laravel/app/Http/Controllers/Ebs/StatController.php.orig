@@ -1,0 +1,31 @@
+<?php
+
+namespace App\Http\Controllers\Ebs;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Stat\StatReadRequest;
+use App\Services\Contracts\Http\Response\ResponseServiceInterface;
+use App\Services\Contracts\Security\SecurityServiceInterface;
+
+class StatController extends Controller
+{
+    public function __construct(
+        public ResponseServiceInterface $responseService,
+        public SecurityServiceInterface $securityService,
+    )
+    {
+    }
+
+    public function statRead(
+        StatReadRequest $request
+    )
+    {
+
+        $this->securityService->getUser();
+        $this->securityService->getLMSDTO();
+
+
+        // todo: implement service call logic
+        return $this->responseService->makeEmptySuccessResponse();
+    }
+}

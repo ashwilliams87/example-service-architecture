@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+{% block head %}
+    <head>
+        <!-- Google Tag Manager -->
+        <script>(function (w, d, s, l, i) {
+                w[l] = w[l] || [];
+                w[l].push({
+                    'gtm.start':
+                        new Date().getTime(), event: 'gtm.js'
+                });
+                var f = d.getElementsByTagName(s)[0],
+                    j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : '';
+                j.async = true;
+                j.src =
+                    'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+                f.parentNode.insertBefore(j, f);
+            })(window, document, 'script', 'dataLayer', 'GTM-P467CNK');</script>
+        <!-- End Google Tag Manager -->
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        {% block meta_base %}{% endblock meta_base %}
+
+        <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico"/>
+
+        <title>{% block title %}ЭБС | &laquo;Издательство &laquo;Лань&raquo;{% endblock title %}</title>
+
+        {% block head_style %}
+            {{ encore_entry_link_tags('profile') }}
+        {% endblock %}
+
+        {% block head_script %}
+            {{ encore_entry_script_tags('profile') }}
+        {% endblock %}
+
+        <meta name='yandex-verification' content='56b5eeb7b816aed8'/>
+        <meta name="google-site-verification" content="RKy8pC_HVqtEsE_t285njMA3gLLVOTDVNlPllkha4ok"/>
+
+        <meta name="viewport" content="width=1020">
+    </head>
+{% endblock head %}
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript>
+    <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-P467CNK" height="0" width="0"
+            style="display:none;visibility:hidden"></iframe>
+</noscript>
+<!-- End Google Tag Manager (noscript) -->
+<div id="iceMessages" class='notifications top-right'></div>
+<div id="icePreloader">
+    <div id="blockG_1" class="preloaderBlock">
+    </div>
+    <div id="blockG_2" class="preloaderBlock">
+    </div>
+    <div id="blockG_3" class="preloaderBlock">
+    </div>
+</div>
+
+{% block contentWrapper %}
+    <div id="content-wrapper">
+        <div class="container">
+            <div id="header" class="row">
+                <div class="col-xs-4">
+                    <div id="header-logo">
+                        <a href="/"></a>
+                        <span>Электронно-библиотечная система</span>
+                    </div>
+                </div>
+                <div class="col-xs-2">
+                    <div id="header-info">
+                        <div id="header-about"><a href="/about">О сервисе</a></div>
+                        <div id="header-help"><a href="/help">Помощь</a></div>
+                        <div id="header-test"><a href="/test">Тестовый доступ</a></div>
+                    </div>
+                </div>
+                <div class="col-xs-6 auth-form-wrapper">
+                    <div id="header-error">
+                        <span data-target="#error_form" data-toggle="modal">Сообщить об ошибке</span>
+                    </div>
+                    <div id="auth-form-align">
+                        {{ securityLogin|raw }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{ mainNav|raw }}
+
+        {% block masterDown %}
+            {% if isDownMaster is defined and isDownMaster == true %}
+                <div class="container">
+                    <div class="col-xs-12">
+                        <div class="info-panel">
+                            Внимание! В связи с проведением обслуживания система работает с ограничениям функционала.
+                            <!--Внимание! В связи с проведением работ могут быть перерывы в обслуживании 21.02.2019 с 23 до 00 МСК.-->
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endblock %}
+        <div class="container">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block footerWrapper %}
+    <div id="footer-wrapper">
+        <div id="footer-top">
+            <div id="under-footer" class="container">
+                <div class="row">
+                    <div class="col-xs-1 footer-volonters-url-cols">
+                        <div class="col-xs-1">
+                            <div id="age-limit">16+</div>
+                        </div>
+                    </div>
+                    <div class="col-xs-7 footer-volonters-url-cols">
+                        <div id="footer-volonters-url">
+                            <a id="footer-volonters-a" href="http://book4blind.ru/" target="_blank">ВОЛОНТЕРСКАЯ
+                                ПРОГРАММА «СДЕЛАЕМ КНИГУ ДОСТУПНОЙ ДЛЯ НЕЗРЯЧИХ»</a>
+                        </div>
+                    </div>
+                    <div class="col-xs-4 footer-volonters-url-cols">
+                        <div id="footer-info">
+                            <div id="footer-about"><a href="/about">О сервисе</a></div>
+                            <div id="footer-help"><a href="/help">Помощь</a></div>
+                            <div id="footer-test"><a href="/test">Тестовый доступ</a></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="footer-bottom">
+            <div id="footer" class="container">
+                <div class="row">
+                    <div class="col-xs-4">
+                        <div id="footer-copyright"><p>© Электронно-библиотечная система Издательства Лань, 2016</p>
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div id="footer-badges">
+                            <div class="googleplay-badge">
+                                <a href='https://play.google.com/store/apps/details?id=com.ddg.lanbook&utm_source=global_co&utm_medium=prtnr&utm_content=Mar2515&utm_campaign=PartBadge&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'
+                                   target="_blank"><img alt='Доступно на Google Play'
+                                                        src='https://play.google.com/intl/en_us/badges/images/generic/ru_badge_web_generic.png'/></a>
+                            </div>
+                            <div class="appstore-badge">
+                                <a href="https://itunes.apple.com/ru/app/ebs-lan/id1162710447"
+                                   title="Загрузите в AppStore" target="_blank"><img
+                                            src="{{ asset('/white/images/badge_appstore.svg') }}"
+                                            alt="Загрузите в AppStore"></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-2">
+                        <div id="footer-emails"><p>ebs@lanbook.ru</p>
+                            <p>lan@lanbook.ru</p></div>
+                    </div>
+                    <div class="col-xs-2">
+                        <div id="footer-phones"><p>/812/ 412-14-45</p>
+                            <p>/812/ 412-05-97</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+<!-- Modal -->
+<div class="modal fade" id="error_form" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button id="error_form_close" type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Сообщить об ошибке</h4>
+
+            </div>
+            <div class="modal-body">
+                <div class="body-text">
+                    htm <p>Если Вы обнаружили ошибку в работе сервиса — попробуйте поискать Ваш вопрос в разделе <a
+                                href="/help">«Помощь»</a>.</p>
+                    <p>Если найти ответ не удалось — пожалуйста, напишите нам.</p>
+                    <p>В комментарии опишите проблему как можно более подробно — это поможет решить проблему быстро.</p>
+                </div>
+                <form id="error_form" action="/help/errorform" method="POST">
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <div class="form-group">
+                                <label for="error_form_name">Имя</label>
+                                <input type="text" class="form-control" id="error_form_name" placeholder="Имя"
+                                       name="name"/>
+                            </div>
+                        </div>
+                        <div class="col-xs-6"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <div class="form-group">
+                                <label for="error_form_email">E-mail</label>
+                                <input type="email" class="form-control" id="error_form_email" placeholder="Email"
+                                       name="email"/>
+                            </div>
+                        </div>
+                        <div class="col-xs-6">{% include 'help/callout.html.twig' with {'style': 'danger', 'text': 'Обязательно указывайте Ваш реальный e-mail, иначе мы не сможем Вам ответить!'} %}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <div class="form-group">
+                                <label for="error_form_type">Тип ошибки</label>
+                                <select class="form-control" id="error_form_type" name="type">
+                                    <option>Выберите тип ошибки</option>
+                                    <option value="1">Мой ВУЗ опреден неверно</option>
+                                    <option value="2">Недоступна коллекция книг</option>
+                                    <option value="3">Недоступна конкретная книга</option>
+                                    <option value="4">Невозможно прочитать книгу</option>
+                                    <option value="5">Ошибка внутри книги</option>
+                                    <option value="6">Ошибка в личном кабинете</option>
+                                    <option value="7">Ошибка в избранном</option>
+                                    <option value="8">Не работает поиск</option>
+                                    <option value="9">Другая ошибка</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-xs-6">{% include 'help/callout.html.twig' with {'style': 'warning', 'text': 'Выберите тип ошибки'} %}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <div class="form-group">
+                                <label for="error_form_comment">Комментарий</label>
+                                <textarea id="error_form_comment" class="form-control" rows="3"
+                                          name="comment"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-xs-6">{% include 'help/callout.html.twig' with {'style': 'danger', 'text': 'Пожалуйста, максимально подробно опишите суть проблемы, чтобы мы могли оперативно ее решить'} %}</div>
+                    </div>
+                    <div class="buttons">
+                        <button type="submit" class="btn btn-send" id="error_form_submit">Отправить</button>
+                    </div>
+                </form>
+                <br>
+                <div id="error_form_error_message">
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<div class="modal fade" id="error_form_success_message_modal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p class="alert alert-success">Ваше сообщение успешно отправлено!</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-dismiss="modal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block javascripts %}{% endblock %}
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function (d, w, c) {
+        (w[c] = w[c] || []).push(function () {
+            try {
+                w.yaCounter6173539 = new Ya.Metrika({
+                    id: 6173539,
+                    clickmap: true,
+                    trackLinks: true,
+                    accurateTrackBounce: true,
+                    webvisor: true
+                });
+            } catch (e) {
+            }
+        });
+
+        var n = d.getElementsByTagName("script")[0],
+            s = d.createElement("script"),
+            f = function () {
+                n.parentNode.insertBefore(s, n);
+            };
+        s.type = "text/javascript";
+        s.async = true;
+        s.src = "https://mc.yandex.ru/metrika/watch.js";
+
+        if (w.opera == "[object Opera]") {
+            d.addEventListener("DOMContentLoaded", f, false);
+        } else {
+            f();
+        }
+    })(document, window, "yandex_metrika_callbacks");
+</script>
+<noscript>
+    <div><img src="https://mc.yandex.ru/watch/6173539" style="position:absolute; left:-9999px;" alt=""/></div>
+</noscript>
+<!-- /Yandex.Metrika counter -->
+{% block footerBacket %}
+    {# <ds-app id="backet"></ds-app> #}
+    {# <script type="text/javascript" src="{{ asset('search_ds/inline.20170314.bundle.js') }}"></script> #}
+    {# <script type="text/javascript" src="{{ asset('search_ds/polyfills.20170314.bundle.js') }}"></script> #}
+    {# <script type="text/javascript" src="{{ asset('search_ds/scripts.20170314.bundle.js') }}"></script> #}
+    {# <script type="text/javascript" src="{{ asset('search_ds/styles.20170314.bundle.js') }}"></script> #}
+    {# <script type="text/javascript" src="{{ asset('search_ds/vendor.20170314.bundle.js') }}"></script> #}
+    {# <script type="text/javascript" src="{{ asset('search_ds/main.20170314.bundle.js') }}"></script> #}
+{% endblock %}
+</body>
+</html>

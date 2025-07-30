@@ -1,0 +1,3 @@
+<?php //App%255CDTOs%255CFoundDocumentDTO%2523getAuthors
+
+return [PHP_INT_MAX, []];

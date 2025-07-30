@@ -1,0 +1,13 @@
+[13:21:30 1723814490.0966] 
+ Ice\Exception\Error: Declaration of Lan\Repositories\Ice\BookRepository::getBooksFromCatalog(Lan\Contracts\DTOs\Book\BookListRequestDTOInterface $requestDTO): Ice\Core\QueryResult must be compatible with Lan\Contracts\Repositories\BookRepositoryInterface::getBooksFromCatalog(Lan\Contracts\DTOs\Document\DocumentsTypeRequestDTOInterface $requestDTO): Ice\Core\QueryResult [peak: 64 MB]  
+ /var/www/html/api-laravel/Lan/Repositories/Ice/BookRepository.php:25  
+ 
+#0 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:276  
+	Ice\Core\Logger->createException('Declaration of ...', '/var/www/html/a...', 25, NULL, Array, 64) 
+#1 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:247  
+	Ice\Core\Logger->error('Declaration of ...', '/var/www/html/a...', 25, NULL, Array, 64) 
+#2 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:197  
+	Ice\Core\Logger::errorHandler:64, 'Declaration of ...', '/var/www/html/a...', 25, Array) 
+#3 [internal function]: Ice\Core\Logger::shutdownHandler() 
+#4 {main} 
+ 

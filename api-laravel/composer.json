@@ -1,0 +1,116 @@
+{
+    "name": "lan/ebs-api-laravel",
+    "type": "project",
+    "description": "Mobile Api based on Laravel",
+    "keywords": [
+        "laravel",
+        "framework"
+    ],
+    "license": "proprietary",
+    "require": {
+        "php": "^8.3.4",
+        "elasticsearch/elasticsearch": "v8.15.0",
+        "firebase/php-jwt": "5.4.*",
+        "gmostafa/php-graphql-client": "^1.13",
+        "lan/ebs-data": "1.25.*",
+        "lan/ice-fork": "1.30.8",
+        "lan/security": "2.3.*",
+        "laravel/framework": "^11.0",
+        "laravel/sanctum": "^4.0",
+        "laravel/tinker": "^2.9"
+    },
+    "require-dev": {
+        "codeception/codeception": "^5.1",
+        "codeception/module-asserts": "^3.0",
+        "codeception/module-laravel": "^3.1",
+        "codeception/module-phpbrowser": "*",
+        "codeception/module-rest": "^3.3",
+        "codeception/module-webdriver": "^4.0",
+        "fakerphp/faker": "^1.23",
+        "laravel/pint": "^1.13",
+        "laravel/sail": "^1.26",
+        "mockery/mockery": "^1.6",
+        "nunomaduro/collision": "^8.0",
+        "phpunit/phpunit": "^10.5",
+        "slevomat/coding-standard": "^8.15",
+        "spatie/laravel-ignition": "^2.4",
+        "symplify/easy-coding-standard": "^12.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+            "Database\\Factories\\": "database/factories/",
+            "Database\\Seeders\\": "database/seeders/",
+            "Lan\\": "Lan/"
+        },
+        "classmap": [
+            "vendor/lan/ebs-data/source/Ebs",
+            "vendor/lan/security/source/Ebs"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan package:discover --ansi"
+        ],
+        "post-update-cmd": [
+            "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
+        ],
+        "post-root-package-install": [
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+        ],
+        "post-create-project-cmd": [
+            "@php artisan key:generate --ansi",
+            "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
+            "@php artisan migrate --graceful --ansi"
+        ]
+    },
+    "extra": {
+        "laravel": {
+            "dont-discover": []
+        }
+    },
+    "repositories": [
+        {
+            "type": "package",
+            "package": {
+                "name": "lan/ebs-data",
+                "version": "1.25.33",
+                "source": {
+                    "url": "https://hg.lanbook.com/ebs-data",
+                    "type": "hg",
+                    "reference": "1.25.33"
+                }
+            }
+        },
+        {
+            "type": "package",
+            "package": {
+                "name": "lan/security",
+                "version": "2.3.110",
+                "source": {
+                    "url": "https://hg.lanbook.com/security",
+                    "type": "hg",
+                    "reference": "2.3.110"
+                }
+            }
+        }
+    ],
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "php-http/discovery": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

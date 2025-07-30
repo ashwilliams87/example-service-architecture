@@ -1,0 +1,34 @@
+<?php
+
+namespace App\Http\Controllers\Ebs;
+
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Author\AuthorCharacterMapRequest;
+use Lan\Services\Contracts\AuthorServiceInterface;
+use Lan\Services\Contracts\Http\Response\ResponseServiceInterface;
+use Lan\Transformers\Contracts\Http\Author\AuthorCharacterMapTransformer;
+
+class AuthorController extends Controller
+{
+    public function __construct(
+        public AuthorServiceInterface   $authorService,
+        public ResponseServiceInterface $responseService
+    )
+    {
+
+    }
+
+    public function authorCharacterMap(
+        AuthorCharacterMapRequest    $request,
+        AuthorCharacterMapTransformer $transformer
+    )
+    {
+        // todo: insertSubscriberVisit();
+        $responseDTO = $this->authorService->getAuthorCharacterMap($request->toDTO());
+
+        return $this->responseService->makeSuccessResponseWithObject(
+            data: $transformer->toArray($responseDTO)
+        );
+    }
+}

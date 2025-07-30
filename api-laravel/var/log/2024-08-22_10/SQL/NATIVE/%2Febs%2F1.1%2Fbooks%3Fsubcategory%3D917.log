@@ -1,0 +1,36 @@
+[2024-08-22 10:10:04 1724321404.2669] sql (native): [Time: 3 ms Mem: 0 B (peak: 34 MB)] SELECT FOUND_ROWS()
+
+[2024-08-22 10:10:04 1724321404.3236] sql (native): [Time: 3 ms Mem: 0 B (peak: 34 MB)] SELECT FOUND_ROWS()
+
+[2024-08-22 10:11:10 1724321470.9673] sql (native): [Time: 3 ms Mem: 0 B (peak: 34 MB)] SELECT FOUND_ROWS()
+
+[2024-08-22 10:11:11 1724321471.0027] sql (native): [Time: 3 ms Mem: 0 B (peak: 34 MB)] SELECT FOUND_ROWS()
+
+[2024-08-22 10:14:35 1724321675.17] sql (native): [Time: 3 ms Mem: 0 B (peak: 34 MB)] SELECT FOUND_ROWS()
+
+[2024-08-22 10:14:35 1724321675.208] sql (native): [Time: 3 ms Mem: 0 B (peak: 34 MB)] SELECT FOUND_ROWS()
+
+[2024-08-22 10:32:27 1724322747.3276] sql (native): [Time: 3 ms Mem: 0 B (peak: 34 MB)] SELECT FOUND_ROWS()
+
+[2024-08-22 10:32:27 1724322747.3652] sql (native): [Time: 3 ms Mem: 0 B (peak: 34 MB)] SELECT FOUND_ROWS()
+
+[2024-08-22 10:33:05 1724322785.4915] sql (native): [Time: 3 ms Mem: 0 B (peak: 38 MB)] SELECT FOUND_ROWS()
+
+[2024-08-22 10:33:05 1724322785.5285] sql (native): [Time: 3 ms Mem: 0 B (peak: 38 MB)] SELECT FOUND_ROWS()
+
+[2024-08-22 10:34:27 1724322867.4842] sql (native): [Time: 3 ms Mem: 0 B (peak: 34 MB)] SELECT FOUND_ROWS()
+
+[2024-08-22 10:34:27 1724322867.5201] sql (native): [Time: 3 ms Mem: 0 B (peak: 34 MB)] SELECT FOUND_ROWS()
+
+[2024-08-22 10:34:55 1724322895.7469] sql (native): [Time: 3 ms Mem: 0 B (peak: 36 MB)] SELECT FOUND_ROWS()
+
+[2024-08-22 10:34:55 1724322895.7863] sql (native): [Time: 3 ms Mem: 0 B (peak: 36 MB)] SELECT FOUND_ROWS()
+
+[2024-08-22 10:35:12 1724322912.2299] sql (native): [Time: 3 ms Mem: 0 B (peak: 36 MB)] SELECT FOUND_ROWS()
+
+[2024-08-22 10:35:12 1724322912.2665] sql (native): [Time: 3 ms Mem: 0 B (peak: 36 MB)] SELECT FOUND_ROWS()
+
+[2024-08-22 10:35:22 1724322922.8617] sql (native): [Time: 3 ms Mem: 0 B (peak: 36 MB)] SELECT FOUND_ROWS()
+
+[2024-08-22 10:35:22 1724322922.8974] sql (native): [Time: 3 ms Mem: 0 B (peak: 36 MB)] SELECT FOUND_ROWS()
+

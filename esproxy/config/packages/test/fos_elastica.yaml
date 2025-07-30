@@ -1,0 +1,13 @@
+# Read the documentation: https://github.com/FriendsOfSymfony/FOSElasticaBundle/blob/master/doc/setup.md
+fos_elastica:
+  clients:
+    default:
+      url: 'http://192.168.0.106:9200'
+      username: '%env(ELASTICSEARCH_USER)%'
+      password: '%env(ELASTICSEARCH_PASSWORD)%'
+  serializer: ~
+  indexes:
+    books_3:
+      properties:
+        book_id: { type: "integer" }
+        book_name: { type: "text", analyzer: "standard" }

@@ -1,0 +1,4 @@
+#!/bin/bash
+
+cd $(dirname $(dirname $(realpath $0))) &&
+vendor/bin/ice-exec $*

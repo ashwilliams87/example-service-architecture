@@ -1,0 +1,39 @@
+[08:16:53 1730794613.7725] 
+ Ice\Exception\Error: Declaration of Lan\DTOs\Book\Responses\BookCardListResponseDTO::getItemClass() must be compatible with Lan\DTOs\Collection\ListDTO::getItemClass(): Ice\Core\Loader [peak: 36 MB]  
+ /var/www/html/api-laravel/Lan/DTOs/Book/Responses/BookCardListResponseDTO.php:28  
+ 
+#0 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:276  
+	Ice\Core\Logger->createException('Declaration of ...', '/var/www/html/a...', 28, NULL, Array, 64) 
+#1 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:247  
+	Ice\Core\Logger->error('Declaration of ...', '/var/www/html/a...', 28, NULL, Array, 64) 
+#2 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:197  
+	Ice\Core\Logger::errorHandler:64, 'Declaration of ...', '/var/www/html/a...', 28, Array) 
+#3 [internal function]: Ice\Core\Logger::shutdownHandler() 
+#4 {main} 
+ 
+[08:17:25 1730794645.0798] 
+ Ice\Exception\Error: Declaration of Lan\DTOs\Book\Responses\BookCardListResponseDTO::getItemClass() must be compatible with Lan\DTOs\Collection\ListDTO::getItemClass(): Ice\Core\Loader [peak: 36 MB]  
+ /var/www/html/api-laravel/Lan/DTOs/Book/Responses/BookCardListResponseDTO.php:28  
+ 
+#0 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:276  
+	Ice\Core\Logger->createException('Declaration of ...', '/var/www/html/a...', 28, NULL, Array, 64) 
+#1 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:247  
+	Ice\Core\Logger->error('Declaration of ...', '/var/www/html/a...', 28, NULL, Array, 64) 
+#2 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:197  
+	Ice\Core\Logger::errorHandler:64, 'Declaration of ...', '/var/www/html/a...', 28, Array) 
+#3 [internal function]: Ice\Core\Logger::shutdownHandler() 
+#4 {main} 
+ 
+[08:17:37 1730794657.8767] 
+ Ice\Exception\Error: Declaration of Lan\DTOs\Collection\ListDTO::getItemClass(): Ice\Core\Loader must be compatible with Lan\Contracts\DTOs\Collection\LanDTOListInterface::getItemClass(): Lan\Contracts\DTOs\LanDTOInterface [peak: 36 MB]  
+ /var/www/html/api-laravel/Lan/DTOs/Collection/ListDTO.php:63  
+ 
+#0 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:276  
+	Ice\Core\Logger->createException('Declaration of ...', '/var/www/html/a...', 63, NULL, Array, 64) 
+#1 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:247  
+	Ice\Core\Logger->error('Declaration of ...', '/var/www/html/a...', 63, NULL, Array, 64) 
+#2 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:197  
+	Ice\Core\Logger::errorHandler:64, 'Declaration of ...', '/var/www/html/a...', 63, Array) 
+#3 [internal function]: Ice\Core\Logger::shutdownHandler() 
+#4 {main} 
+ 

@@ -1,0 +1,36 @@
+<?php
+
+namespace Tests\Unit\Transformers;
+
+use Codeception\Test\Unit;
+use Lan\DTOs\Search\Responses\PaginatedSearchAllResponseDTO;
+use Lan\DTOs\Search\Responses\SearchAllResponseDTO;
+use Lan\Transformers\Contracts\Http\Search\SearchAllPaginatedTransformer;
+use Lan\Transformers\Contracts\Http\Search\SearchAllTransformer;
+
+class SearchAllPaginatedTransformerTest extends Unit
+{
+    public function testToArray(): void{
+        $paginatedTransformer = new SearchAllPaginatedTransformer(new SearchAllTransformer());
+        $expectedTransformationResult = [
+            'data' => [],
+            'cnt' => 20
+        ];
+        $searchResultDTOs = [];
+        for ($i = 0; $i < 10; $i++) {
+            $searchResultDTOs[] = new SearchAllResponseDTO(
+                id: $i,
+                type: 'type'. $i,
+                title: 'title'. $i,
+                count: $i
+            );
+
+            $transformer = new SearchAllTransformer();
+            $expectedTransformationResult['data'][] = $transformer->toArray($searchResultDTOs[$i]);
+        }
+
+        $paginatedDto = new PaginatedSearchAllResponseDTO(dtoItems: $searchResultDTOs, count: 20);
+        $transformResult = $paginatedTransformer->setPaginatedDto($paginatedDto)->toArray();
+        $this->assertEquals($expectedTransformationResult, $transformResult);
+    }
+}

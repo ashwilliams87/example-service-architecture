@@ -1,0 +1,4 @@
+#!/bin/bash
+
+cd $(dirname $(dirname $(realpath $0))) &&
+bin/exec bin/front $1;

@@ -1,0 +1,51 @@
+<?php
+
+namespace Tests\Unit\Transformers;
+
+use Codeception\Test\Unit;
+use Lan\DataTypes\EbsCarbon;
+use Lan\DTOs\Search\Responses\PaginatedSearchBooksResponseDTO;
+use Lan\DTOs\Search\Responses\SearchBooksResponseDTO;
+use Lan\Transformers\Contracts\Http\Search\SearchBooksPaginatedTransformer;
+use Lan\Transformers\Contracts\Http\Search\SearchBooksTransformer;
+
+class SearchBooksPaginatedTransformerTest extends Unit
+{
+    public function testCreateTransformer(): void
+    {
+        $transformer = SearchBooksPaginatedTransformer::create();
+        $this->assertInstanceOf(SearchBooksPaginatedTransformer::class, $transformer);
+    }
+
+    public function testToArray(): void{
+        $paginatedTransformer = SearchBooksPaginatedTransformer::create();
+        $expectedTransformationResult = [];
+        $searchResultDTOs = [];
+        for ($i = 0; $i < 10; $i++) {
+            $searchResultDTOs[] = SearchBooksResponseDTO::create(
+                id: rand(1, 100),
+                name: 'Book ' . $i,
+                word: 'Word ' . $i,
+                snippet: 'Snippet ' . $i,
+                hasPdf: (bool)rand(0, 1),
+                hasEpub: (bool)rand(0, 1),
+                hasAudio: (bool)rand(0, 1),
+                hasSyntex: (bool)rand(0, 1),
+                bookExpired: EbsCarbon::parse('2021-01-01'),
+                bookPrivate: (bool)rand(0, 1),
+                synthesizerEditor: 'Editor ' . $i,
+                synthesizerQuality: rand(1, 10),
+                available: (bool)rand(0, 1),
+                authors: 'Author ' . $i,
+                publisherName: 'Publisher ' . $i
+            );
+
+            $searchBooksTransformer = new SearchBooksTransformer();
+            $expectedTransformationResult[] = $searchBooksTransformer->toArray($searchResultDTOs[$i]);
+        }
+
+        $paginatedDto = new PaginatedSearchBooksResponseDTO(dtoItems: $searchResultDTOs);
+        $transformResult = $paginatedTransformer->setPaginatedDto($paginatedDto)->toArray();
+        $this->assertEquals($expectedTransformationResult, $transformResult);
+    }
+}

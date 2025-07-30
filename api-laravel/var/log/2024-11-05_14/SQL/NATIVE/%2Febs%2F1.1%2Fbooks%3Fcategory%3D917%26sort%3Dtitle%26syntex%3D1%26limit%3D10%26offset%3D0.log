@@ -1,0 +1,12 @@
+[2024-11-05 14:02:32 1730815352.5755] sql (native): [Time: 9 ms Mem: 0 B (peak: 36 MB)] SELECT FOUND_ROWS()
+
+[2024-11-05 14:02:32 1730815352.6419] sql (native): [Time: 3 ms Mem: 0 B (peak: 36 MB)] SELECT FOUND_ROWS()
+
+[2024-11-05 14:03:44 1730815424.8354] sql (native): [Time: 8 ms Mem: 0 B (peak: 36 MB)] SELECT FOUND_ROWS()
+
+[2024-11-05 14:03:44 1730815424.9111] sql (native): [Time: 5 ms Mem: 0 B (peak: 36 MB)] SELECT FOUND_ROWS()
+
+[2024-11-05 14:04:51 1730815491.1586] sql (native): [Time: 3 ms Mem: 0 B (peak: 36 MB)] SELECT FOUND_ROWS()
+
+[2024-11-05 14:04:51 1730815491.2481] sql (native): [Time: 9 ms Mem: 0 B (peak: 36 MB)] SELECT FOUND_ROWS()
+

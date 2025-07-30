@@ -1,0 +1,2 @@
+[2024-08-21 09:31:14 1724232674.3459] cd /var/www/html/api-laravel/ && \
+/var/www/html/api-laravel/vendor/lan/ice-fork/bin/ice 'Ebs\Action\Log_SubscriberVisit' subscriber_visit_pk='878d3541a911cacadfae919204e9d16066a227e75b6fb0.07185622' read_date='2024-08-21' user__fk='10121529' unique_user_id='2f955f8af2ef9af85edfedf4dd165e90' views='1' by_lk='1' by_ip='0' by_app='0' by_moodle='0' time='1970-01-01 00:00:00' user_agent='PostmanRuntime/7.41.1' > /dev/null 2>&1 & [code:  0]

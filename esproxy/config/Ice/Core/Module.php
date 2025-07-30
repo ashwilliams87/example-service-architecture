@@ -1,0 +1,36 @@
+<?php
+return [
+    'alias' => 'esproxy',
+    'namespace' => 'Lan\Ebs\esproxy',
+    'module' => [
+        'vendor' => 'lan',
+        'name' => 'esproxy',
+        'version' => '0.0',
+        'description' => 'EBS Lan',
+        'authors' => 'anonymous <email>',
+        'vcs' => 'mercurial',
+        'Ice\\Core\\DataSource' => [],
+        'pathes' => [
+            'configDir' => 'config/',
+            'sourceDir' => 'src/',
+            'resourceDir' => 'templates/',
+            'varDir' => 'var',
+            'logDir' => 'var/log/',
+            'cacheDir' => 'var/cache/',
+            'uploadDir' => 'var/upload/',
+            'dataDir' => 'var/data/',
+            'tempDir' => 'var/temp/',
+            'backupDir' => 'var/backup/',
+            'runDir' => 'var/run/',
+            'privateDownloadDir' => 'var/download/',
+            'publicDir' => 'public/',
+            'compiledResourceDir' => 'public/resource/',
+            'downloadDir' => 'public/download/',
+        ],
+        'ignorePatterns' => [],
+    ],
+    'modules' => [
+        'lan/ebs-data' => '',
+        'lan/security' => '/security',
+    ],
+];

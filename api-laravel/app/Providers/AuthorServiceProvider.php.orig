@@ -1,0 +1,36 @@
+<?php
+
+namespace App\Providers;
+
+use Illuminate\Support\ServiceProvider;
+use Lan\Repositories\Contracts\AuthorRepositoryInterface;
+use Lan\Repositories\Ice\AuthorRepository;
+use Lan\Services\AuthorService;
+use Lan\Services\Contracts\AuthorServiceInterface;
+
+class AuthorServiceProvider extends ServiceProvider
+{
+    /**
+     * Register any application services.
+     */
+    public function register(): void
+    {
+        $this->app->bind(
+            AuthorRepositoryInterface::class,
+            AuthorRepository::class
+        );
+
+        $this->app->bind(
+            AuthorServiceInterface::class,
+            AuthorService::class
+        );
+    }
+
+    /**
+     * Bootstrap any application services.
+     */
+    public function boot(): void
+    {
+
+    }
+}

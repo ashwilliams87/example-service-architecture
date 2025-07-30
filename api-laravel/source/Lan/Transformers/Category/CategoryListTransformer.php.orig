@@ -1,0 +1,24 @@
+<?php
+
+namespace Lan\Transformers\Category;
+
+use Lan\Contracts\DTOs\Category\CategoryListDTOInterface;
+use Lan\Contracts\DTOs\LanDTOInterface;
+use Lan\Contracts\Transformers\TransformToMobileData;
+class CategoryListTransformer implements TransformToMobileData
+{
+
+    public function transformToMobileData(LanDTOInterface $dto): array
+    {
+        return $this->convertToMobileResponseArray($dto);
+    }
+
+    private function convertToMobileResponseArray(CategoryListDTOInterface $dtoList)
+    {
+        $arrayTransformed = [];
+        foreach ($dtoList->getAll() as $item) {
+            $arrayTransformed = $item;
+        }
+        return $arrayTransformed;
+    }
+}

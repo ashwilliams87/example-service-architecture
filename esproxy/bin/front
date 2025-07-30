@@ -1,0 +1,11 @@
+#!/bin/bash
+
+cd $(dirname $(dirname $(realpath $0))) &&
+hg pull -R front &&
+hg update -R front &&
+rm -rf public/front &&
+rm -rf front/node_modules &&
+export NODE_OPTIONS=--max_old_space_size=8096 &&
+export NG_CLI_ANALYTICS=ci &&
+npm --prefix front install &&
+npm --prefix front run-script $1

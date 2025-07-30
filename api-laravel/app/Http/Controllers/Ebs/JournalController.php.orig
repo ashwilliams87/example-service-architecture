@@ -1,0 +1,164 @@
+<?php
+
+namespace App\Http\Controllers\Ebs;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Book\ArticleListRequest;
+use App\Http\Requests\Journal\ArticleCreateKeyRequest;
+use App\Http\Requests\Journal\ArticleDownloadRequest;
+use App\Http\Requests\Journal\ArticleMetaRequest;
+use App\Http\Requests\Journal\JournalIssueListRequest;
+use App\Http\Requests\Journal\JournalListRequest;
+use Lan\DataTypes\Contracts\FileTypes\FileTypeInterface;
+use Lan\DataTypes\FileTypes\AudioFileType;
+use Lan\DataTypes\FileTypes\EpubFileType;
+use Lan\DataTypes\FileTypes\PdfFileType;
+use Lan\DataTypes\FileTypes\TextFileType;
+use Lan\Services\Contracts\Http\Response\ResponseServiceInterface;
+use Lan\Services\Contracts\JournalServiceInterface;
+use Lan\Transformers\Contracts\Http\Journal\ArticleCreateKeyTransformer;
+use Lan\Transformers\Contracts\Http\Journal\ArticleListPaginatedTransformer;
+use Lan\Transformers\Contracts\Http\Journal\ArticleMetaTransformer;
+use Lan\Transformers\Contracts\Http\Journal\JournalIssueListTransformer;
+use Lan\Transformers\Contracts\Http\Journal\JournalListPaginatedTransformer;
+
+class JournalController extends Controller
+{
+    public function __construct(
+        public JournalServiceInterface  $journalService,
+        public ResponseServiceInterface $responseService
+    )
+    {
+
+    }
+
+    public function journalList(
+        JournalListRequest              $request,
+        JournalListPaginatedTransformer $paginatedTransformer
+    )
+    {
+        // todo: insertSubscriberVisit();
+        $paginatedDTO = $this->journalService->getJournalsFromCatalog($request->toDTO());
+        $data = $paginatedTransformer->setPaginatedDto($paginatedDTO)
+            ->toArray();
+
+        return $this->responseService->makeSuccessResponseWithObject(data: $data);
+    }
+
+    public function articleList(
+        ArticleListRequest              $request,
+        ArticleListPaginatedTransformer $paginatedTransformer
+    )
+    {
+        // todo: insertSubscriberVisit();
+        $paginatedDTO = $this->journalService->getArticlesFromJournal($request->toDTO());
+        $data = $paginatedTransformer->setPaginatedDto($paginatedDTO)
+            ->toArray();
+
+        return $this->responseService->makeSuccessResponseWithObject(data: $data);
+    }
+
+    public function journalIssueList(
+        JournalIssueListRequest     $request,
+        JournalIssueListTransformer $transformer,
+    )
+    {
+        // todo: insertSubscriberVisit();
+        $responseDTO = $this->journalService->getJournalIssues($request->toDTO());
+
+        if ($responseDTO->isEmpty()) {
+            return $this->responseService->makeNotFoundResponse();
+        }
+
+        // todo: реализовать логирование, как в api-phalcon
+        // if (!$journal['active']) {
+        //            if ($user->getSubscriber()) {
+        //                $time = Date::get();
+        //
+        //                $logFail = [
+        //                    'create_time' => $time,
+        //                    'subscriber__fk' => $user->getSubscriber(),
+        //                    'journal__fk' => $journal['id'],
+        //                    'session' => $security->getSessionId(),
+        //                    'read_date' => Date::get($time, 'Y-m-d'),
+        //                    'user__fk' => $user->getPkValue(),
+        //                ];
+        //
+        //                Log_JournalFail::call($logFail, 0, true);
+        //            }
+        //        }
+
+        return $this->responseService->makeSuccessResponseWithObject(
+            data: $transformer->toArray($responseDTO)
+        );
+    }
+
+
+    public function articleCreateKey(
+        ArticleCreateKeyRequest $request,
+        ArticleCreateKeyTransformer $transformer,
+    )
+    {
+        $responseDTO = $this->journalService->createArticleKey($request->toDTO());
+
+        if ($responseDTO->getStatus()->isError()) {
+            return $this->responseService->makeErrorResponse($responseDTO->getStatus());
+        }
+
+        return $this->responseService->makeSuccessResponseWithObject(
+            data: $transformer->toArray($responseDTO)
+        );
+    }
+
+    public function articleMeta(
+        ArticleMetaRequest          $request,
+        ArticleMetaTransformer $transformer,
+    )
+    {
+        $responseDTO = $this->journalService->getArticleMeta($request->toDTO());
+
+        if ($responseDTO->getStatus()->isError()) {
+            return $this->responseService->makeErrorResponse($responseDTO->getStatus());
+        }
+
+        return $this->responseService->makeSuccessResponseWithObject(
+            data: $transformer->toArray($responseDTO)
+        );
+    }
+
+    public function downloadPdf(ArticleDownloadRequest $request)
+    {
+        return $this->downloadFile($request, new PdfFileType());
+    }
+
+    public function downloadEpub(ArticleDownloadRequest $request)
+    {
+        return $this->downloadFile($request, new EpubFileType());
+    }
+
+    public function downloadText(ArticleDownloadRequest $request)
+    {
+        return $this->downloadFile($request, new TextFileType());
+    }
+
+    public function downloadAudio(ArticleDownloadRequest $request)
+    {
+        return $this->downloadFile($request, new AudioFileType());
+    }
+
+    private function downloadFile(
+        ArticleDownloadRequest $request,
+        FileTypeInterface $fileType
+    )
+    {
+        $responseDTO = $this->journalService->getArticleDownloadFilePath($request->toDTO(), $fileType);
+
+        if ($responseDTO->getStatus()->isError()) {
+            return $this->responseService->makeErrorResponse($responseDTO->getStatus());
+        }
+
+        $this->responseService->sendEncryptedFileToClient(
+            filePath: $responseDTO->getFilePath()
+        );
+    }
+}

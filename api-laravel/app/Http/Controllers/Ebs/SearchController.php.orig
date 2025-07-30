@@ -1,0 +1,82 @@
+<?php
+
+namespace App\Http\Controllers\Ebs;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Search\SearchAllRequest;
+use App\Http\Requests\Search\SearchByDocumentTypeRequest;
+use Lan\DataTypes\Http\RequestResult\Error\MethodNotAllowedError;
+use Lan\Repositories\Contracts\SearchRepositoryInterface;
+use Lan\Services\Contracts\Http\Response\ResponseServiceInterface;
+use Lan\Services\Contracts\SearchServiceInterface;
+use Lan\Transformers\Contracts\Http\Search\SearchAllPaginatedTransformer;
+use Lan\Transformers\Contracts\Http\Search\SearchArticlesPaginatedTransformer;
+use Lan\Transformers\Contracts\Http\Search\SearchBooksPaginatedTransformer;
+use Lan\Transformers\Contracts\Http\Search\SearchJournalPaginatedTransformer;
+
+class SearchController extends Controller
+{
+    public function __construct(
+        public SearchServiceInterface   $searchService,
+        public ResponseServiceInterface $responseService
+    )
+    {
+
+    }
+
+    public function searchAll(
+        SearchAllRequest              $request,
+        SearchAllPaginatedTransformer $paginatedTransformer
+    )
+    {
+        // todo: insertSubscriberVisit();
+        $requestDTO = $request->toDTO();
+        $paginatedDTO = $this->searchService->searchAll($requestDTO);
+
+        $data = $paginatedTransformer->setPaginatedDto($paginatedDTO)
+            ->toArray();
+
+        return $this->responseService->makeSuccessResponseWithObject(data: $data);
+    }
+
+    public function searchByDocumentType(SearchByDocumentTypeRequest $request)
+    {
+        // todo: insertSubscriberVisit();
+        $requestDTO = $request->toDTO();
+
+        if ($this->isBookSearchType($requestDTO->getType())) {
+            $paginatedDTO = $this->searchService->searchBooks($requestDTO);
+            $transformer = SearchBooksPaginatedTransformer::create();
+
+        } else if ($this->isJournalSearchType($requestDTO->getType())) {
+            $paginatedDTO = $this->searchService->searchJournals($requestDTO);
+            $transformer = SearchJournalPaginatedTransformer::create();
+
+        } else if ($this->isArticleSearchType($requestDTO->getType())) {
+            $paginatedDTO = $this->searchService->searchArticles($requestDTO);
+            $transformer = SearchArticlesPaginatedTransformer::create();
+        } else {
+            return $this->responseService->makeErrorResponse(new MethodNotAllowedError());
+        }
+
+        $data = $transformer->setPaginatedDto($paginatedDTO)
+            ->toArray();
+
+        return $this->responseService->makeSuccessResponseWithArray(data: $data);
+    }
+
+    private function isBookSearchType(int $searchType): bool
+    {
+        return in_array($searchType, SearchRepositoryInterface::BOOK_SEARCH_TYPE_LIST);
+    }
+
+    private function isJournalSearchType(int $searchType): bool
+    {
+        return in_array($searchType, SearchRepositoryInterface::JOURNAL_SEARCH_TYPE_LIST);
+    }
+
+    private function isArticleSearchType(int $searchType): bool
+    {
+        return in_array($searchType, SearchRepositoryInterface::ARTICLE_SEARCH_TYPE_LIST);
+    }
+}

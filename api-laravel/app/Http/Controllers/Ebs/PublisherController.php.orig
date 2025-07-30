@@ -1,0 +1,33 @@
+<?php
+
+namespace App\Http\Controllers\Ebs;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Publisher\PublisherListRequest;
+use Lan\Services\Contracts\Http\Response\ResponseServiceInterface;
+use Lan\Services\Contracts\PublisherServiceInterface;
+use Lan\Transformers\Contracts\Http\Publisher\PublisherListPaginatedTransformer;
+
+class PublisherController extends Controller
+{
+    public function __construct(
+        public PublisherServiceInterface $publisherService,
+        public ResponseServiceInterface  $responseService
+    )
+    {
+
+    }
+
+    public function publisherList(
+        PublisherListRequest              $request,
+        PublisherListPaginatedTransformer $paginatedTransformer
+    )
+    {
+        // todo: insertSubscriberVisit();
+        $paginatedDTO = $this->publisherService->getPublishers($request->toDTO());
+        $data = $paginatedTransformer->setPaginatedDto($paginatedDTO)
+            ->toArray();
+
+        return $this->responseService->makeSuccessResponseWithArray(data: $data);
+    }
+}

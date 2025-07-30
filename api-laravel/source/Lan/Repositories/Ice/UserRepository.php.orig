@@ -1,0 +1,31 @@
+<?php
+
+namespace Lan\Repositories\Ice;
+
+use Ebs\Helper\GraphQl\GraphQlClient;
+use Ebs\Model\Subscriber;
+use Ice\Core\Request;
+use Ice\Model\User;
+use Lan\Repositories\Contracts\UserRepositoryInterface;
+
+class UserRepository implements UserRepositoryInterface
+{
+    public function markAppAsUsedByUser(int $user_id): void
+    {
+        User::createQueryBuilder()
+            ->eq(['security_user__fk' => $user_id])
+            ->getUpdateQuery([
+                'app_used' => 1,
+            ])->getQueryResult();
+    }
+
+    public function getSubscriberFromIp(string $clientIp): Subscriber
+    {
+        $subscriber = GraphQlClient::getSubscriberFromIp(Request::ip());
+        if($subscriber){
+            return $subscriber;
+        }
+
+        return Subscriber::create();
+    }
+}

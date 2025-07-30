@@ -1,0 +1,11 @@
+fos_elastica:
+  clients:
+    default:
+      connections:
+        - url: 'http://127.0.0.1:9200' # временный адрес или любой доступный в dev
+  serializer: ~
+  indexes:
+    books_3:
+      properties:
+        book_id: { type: "integer" }
+        book_name: { type: "text", analyzer: "standard" }

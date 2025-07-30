@@ -1,0 +1,26 @@
+[08:30:26 1724661026.3228] 
+ Ice\Exception\Error: Lan\DTOs\Collection\ListDTO::getItemClass() has #[\Override] attribute, but no matching parent method exists [peak: 36 MB]  
+ /var/www/html/api-laravel/Lan/DTOs/Collection/ListDTO.php:69  
+ 
+#0 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:276  
+	Ice\Core\Logger->createException('Lan\\DTOs\\Collec...', '/var/www/html/a...', 69, NULL, Array, 64) 
+#1 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:247  
+	Ice\Core\Logger->error('Lan\\DTOs\\Collec...', '/var/www/html/a...', 69, NULL, Array, 64) 
+#2 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:197  
+	Ice\Core\Logger::errorHandler:64, 'Lan\\DTOs\\Collec...', '/var/www/html/a...', 69, Array) 
+#3 [internal function]: Ice\Core\Logger::shutdownHandler() 
+#4 {main} 
+ 
+[08:31:33 1724661093.521] 
+ Ice\Exception\Error: Cannot make static method Lan\DTOs\Collection\ListDTO::getItemClass() non static in class Lan\DTOs\Book\Responses\BookCardListResponseDTO [peak: 36 MB]  
+ /var/www/html/api-laravel/Lan/DTOs/Book/Responses/BookCardListResponseDTO.php:38  
+ 
+#0 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:276  
+	Ice\Core\Logger->createException('Cannot make sta...', '/var/www/html/a...', 38, NULL, Array, 64) 
+#1 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:247  
+	Ice\Core\Logger->error('Cannot make sta...', '/var/www/html/a...', 38, NULL, Array, 64) 
+#2 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:197  
+	Ice\Core\Logger::errorHandler:64, 'Cannot make sta...', '/var/www/html/a...', 38, Array) 
+#3 [internal function]: Ice\Core\Logger::shutdownHandler() 
+#4 {main} 
+ 

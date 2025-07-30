@@ -1,0 +1,65 @@
+#!/usr/bin/env php
+<?php
+
+use Ebs\Security\Ebs;
+use Ice\Core\Config;
+use Ice\Core\DataProvider;
+use Ice\Core\Environment;
+use Ice\Core\MessageTransport;
+use Ice\Core\Request;
+use Ice\Core\Security;
+use Ice\DataProvider\Mysqli;
+use Ice\DataProvider\Tarantool;
+use Ice\Helper\Console;
+use Ice\Helper\File;
+
+
+$subscriberKey = 1001780;
+$host = 'profile.ebs.academy.org';
+
+
+try {
+    require_once realpath(__DIR__ . '/../vendor/lan/ice-fork/source/bootstrap.php');
+
+    $moduleDir = getModuleDir();
+
+    foreach (['', 'vendor/lan/ebs-data', 'vendor/lan/security'] as $cd) {
+        Console::run('cd ' . $moduleDir . $cd . ' && hg pull -u && hg revert --all');
+    }
+
+    $file = $moduleDir . 'config/Ice/Core/Config.php';
+
+    $data = include $file;
+
+    $data[Environment::class] = ['environments'=> []];
+
+    foreach (['/' . $host . '$/', '/^nginx$/'] as $pattern) {
+        $data[Environment::class]['environments'][$pattern] = 'production';
+    }
+
+    foreach (['www', 'reader'] as $subDomain) {
+        $data[Request::class]['cors']['http://' . $subDomain . '.' . $host] = [
+            'methods' => ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+            'headers' => ['Origin', 'Accept', 'x-auth-token', 'X-Requested-With', 'Content-Range', 'Content-Disposition', 'Content-Type', 'User-Agent', 'Content-Length', 'Referer'],
+            'credentials' => 'true'
+        ];
+    }
+
+    File::createData($file, $data);
+
+
+    foreach (['ebs-data', 'security'] as $vendor) {
+        $file = $moduleDir . 'vendor/lan/ebs-data/config/Ice/Core/Environment.php';
+
+        $data = include $file;
+
+        $data['test'] = [];
+        $data['development'] = [];
+
+        File::createData($file, $data);
+    }
+
+    file_put_contents($moduleDir . '.env', "APP_ENV=prod\nKERNEL_CLASS='App\Kernel'\nAPP_SECRET=592200882f3e3a03d77a0591f11c485b\nSYMFONY_DEPRECATIONS_HELPER=999999\nPANTHER_APP_ENV=panther\nPANTHER_ERROR_SCREENSHOT_DIR=./var/error-screenshots\n");
+} catch (Throwable $e) {
+    echo $e->getMessage();
+}

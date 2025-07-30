@@ -1,0 +1,13 @@
+[17:22:08 1724077328.9627] 
+ Ice\Exception\Error: Cannot use positional argument after argument unpacking [peak: 48 MB]  
+ /var/www/html/api-laravel/tests/Unit/DTOs/Collection/ListDTOTest.php:16  
+ 
+#0 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:276  
+	Ice\Core\Logger->createException('Cannot use posi...', '/var/www/html/a...', 16, NULL, Array, 64) 
+#1 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:247  
+	Ice\Core\Logger->error('Cannot use posi...', '/var/www/html/a...', 16, NULL, Array, 64) 
+#2 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:197  
+	Ice\Core\Logger::errorHandler:64, 'Cannot use posi...', '/var/www/html/a...', 16, Array) 
+#3 [internal function]: Ice\Core\Logger::shutdownHandler() 
+#4 {main} 
+ 

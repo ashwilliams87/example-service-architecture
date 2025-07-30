@@ -1,0 +1,3 @@
+<?php //App%255CRequest%255CBookSearchContentRequest%2523getSearchQuery
+
+return [PHP_INT_MAX, []];

@@ -1,0 +1,801 @@
+<?php
+
+namespace Tests\Unit\Services;
+
+use Codeception\Stub\Expected;
+use Codeception\Test\Unit;
+use Ebs\Model\Journal_Article;
+use Ice\Core\QueryResult;
+use Lan\DataTypes\Contracts\FileTypes\FileTypeInterface;
+use Lan\DataTypes\EbsCarbon;
+use Lan\DataTypes\FileTypes\AudioFileType;
+use Lan\DataTypes\FileTypes\EpubFileType;
+use Lan\DataTypes\FileTypes\PdfFileType;
+use Lan\DataTypes\FileTypes\TextFileType;
+use Lan\DataTypes\Http\RequestResult\Error\NoAccessToResourceError;
+use Lan\DataTypes\Http\RequestResult\Error\NotAvailableForDownloadError;
+use Lan\DataTypes\Http\RequestResult\Error\ResourceNotFoundError;
+use Lan\DataTypes\Http\RequestResult\Success\GenericSuccessResult;
+use Lan\DTOs\Book\Responses\JournalListResponseDTO;
+use Lan\DTOs\Book\Responses\PaginatedJournalListResponseDTO;
+use Lan\DTOs\Journal\Requests\ArticleCreateKeyRequestDTO;
+use Lan\DTOs\Journal\Requests\ArticleDownloadRequestDTO;
+use Lan\DTOs\Journal\Requests\ArticleListRequestDTO;
+use Lan\DTOs\Journal\Requests\ArticleMetaRequestDTO;
+use Lan\DTOs\Journal\Requests\JournalIssueListRequestDTO;
+use Lan\DTOs\Journal\Requests\JournalListRequestDTO;
+use Lan\DTOs\Journal\Responses\ArticleCreateKeyResponseDTO;
+use Lan\DTOs\Journal\Responses\ArticleDownloadResponseDTO;
+use Lan\DTOs\Journal\Responses\ArticleListResponseDTO;
+use Lan\DTOs\Journal\Responses\ArticleMetaResponseDTO;
+use Lan\DTOs\Journal\Responses\JournalIssueList\IssueDTO;
+use Lan\DTOs\Journal\Responses\JournalIssueList\JournalIssueListResponseDTO;
+use Lan\DTOs\Journal\Responses\JournalIssueList\PaginatedIssueListDTO;
+use Lan\DTOs\Journal\Responses\JournalIssueList\PaginatedYearWithIssueListDTO;
+use Lan\DTOs\Journal\Responses\JournalIssueList\YearWithIssuesDTO;
+use Lan\DTOs\Journal\Responses\PaginatedArticleListResponseDTO;
+use Lan\Repositories\Ice\JournalRepository;
+use Lan\Services\CoverService;
+use Lan\Services\JournalService;
+use Lan\Services\Security\DocumentCryptService;
+use Lan\Services\Security\DownloadProtectService;
+use Tests\Support\UnitTester;
+
+class JournalServiceTest extends Unit
+{
+    protected array $fileTypesClassnames = [
+        PdfFileType::class,
+        EpubFileType::class,
+        TextFileType::class,
+        AudioFileType::class,
+    ];
+
+    protected UnitTester $tester;
+
+    // ->createArticleKey() tests
+
+    public function testCreateArticleKeyWithAvailableAndPossibleToDownloadArticle()
+    {
+        $requestDTO = new ArticleCreateKeyRequestDTO(articleId: 1);
+        $expectedKeys = [264, 249, 327, 348, 330, 390, 411, 426, 336, 345, 390, 414];
+
+        $articleMock = $this->make(Journal_Article::class, [
+            'getPk' => Expected::once(function () {
+                return 1;
+            }),
+            'get' => Expected::once(function (string $articleGetKey) {
+                return true;
+            }),
+        ]);
+
+        $downloadProtectorServiceMock = $this->make(DownloadProtectService::class, [
+            'isDownloadPossible' => Expected::once(function (Journal_Article $article) {
+                return true;
+            }),
+        ]);
+
+        $JournalRepositoryMock = $this->make(journalRepository::class, [
+            'getArticle' => Expected::once(function (int $articleId) use ($articleMock) {
+                return $articleMock;
+            }),
+        ]);
+
+        $documentCryptServiceMock = $this->make(DocumentCryptService::class, [
+            'createKey' => Expected::once(function (Journal_Article $article) {
+                return [264, 249, 327, 348, 330, 390, 411, 426, 336, 345, 390, 414];
+            }),
+        ]);
+
+        $coverServiceMock = $this->make(CoverService::class, [
+            'makeJournalCover' => Expected::never(),
+            'makeBookCover' => Expected::never(),
+        ]);
+
+        $journalService = new JournalService(
+            journalRepository: $JournalRepositoryMock,
+            coverService: $coverServiceMock,
+            downloadProtectorService: $downloadProtectorServiceMock,
+            documentCryptService: $documentCryptServiceMock,
+        );
+
+        $responseDto = $journalService->createArticleKey($requestDTO);
+
+        $this->assertInstanceOf(ArticleCreateKeyResponseDTO::class, $responseDto);
+        $this->assertEquals($expectedKeys, $responseDto->getKey());
+        $this->assertEquals(new GenericSuccessResult(), $responseDto->getStatus());
+        $this->assertEquals(false, $responseDto->getStatus()->isError());
+    }
+
+    public function testCreateArticleKeyWithNotFoundArticleError()
+    {
+        $requestDTO = new ArticleCreateKeyRequestDTO(articleId: 99999);
+
+        $downloadProtectorServiceMock = $this->make(DownloadProtectService::class, [
+            'isDownloadPossible' => Expected::never(),
+        ]);
+
+        $JournalRepositoryMock = $this->make(journalRepository::class, [
+            'getArticle' => Expected::once(function (int $articleId) {
+                return Journal_Article::create();
+            }),
+        ]);
+
+        $documentCryptServiceMock = $this->make(DocumentCryptService::class, [
+            'createKey' => Expected::never(),
+        ]);
+
+        $coverServiceMock = $this->make(CoverService::class, [
+            'makeJournalCover' => Expected::never(),
+            'makeBookCover' => Expected::never(),
+        ]);
+
+        $journalService = new JournalService(
+            journalRepository: $JournalRepositoryMock,
+            coverService: $coverServiceMock,
+            downloadProtectorService: $downloadProtectorServiceMock,
+            documentCryptService: $documentCryptServiceMock,
+        );
+
+        $responseDto = $journalService->createArticleKey($requestDTO);
+
+        $this->assertInstanceOf(ArticleCreateKeyResponseDTO::class, $responseDto);
+        $this->assertEquals([], $responseDto->getKey());
+        $this->assertEquals(new ResourceNotFoundError(), $responseDto->getStatus());
+        $this->assertEquals(true, $responseDto->getStatus()->isError());
+    }
+
+    public function testCreateArticleKeyWithNotAvailableArticle()
+    {
+        $requestDTO = new ArticleCreateKeyRequestDTO(articleId: 400);
+
+        $articleMock = $this->make(Journal_Article::class, [
+            'getPk' => Expected::once(function () {
+                return 1;
+            }),
+            'get' => Expected::once(function (string $articleGetKey) {
+                return false;
+            }),
+        ]);
+
+        $downloadProtectorServiceMock = $this->make(DownloadProtectService::class, [
+            'isDownloadPossible' => Expected::never(),
+        ]);
+
+        $JournalRepositoryMock = $this->make(journalRepository::class, [
+            'getArticle' => Expected::once(function (int $articleId) use ($articleMock) {
+                return $articleMock;
+            }),
+        ]);
+
+        $documentCryptServiceMock = $this->make(DocumentCryptService::class, [
+            'createKey' => Expected::never(),
+        ]);
+
+        $coverServiceMock = $this->make(CoverService::class, [
+            'makeJournalCover' => Expected::never(),
+            'makeBookCover' => Expected::never(),
+        ]);
+
+        $journalService = new JournalService(
+            journalRepository: $JournalRepositoryMock,
+            coverService: $coverServiceMock,
+            downloadProtectorService: $downloadProtectorServiceMock,
+            documentCryptService: $documentCryptServiceMock,
+        );
+
+        $responseDto = $journalService->createArticleKey($requestDTO);
+
+        $this->assertInstanceOf(ArticleCreateKeyResponseDTO::class, $responseDto);
+        $this->assertEquals([], $responseDto->getKey());
+        $this->assertEquals(new NoAccessToResourceError(), $responseDto->getStatus());
+        $this->assertEquals(true, $responseDto->getStatus()->isError());
+    }
+
+    public function testCreateArticleKeyWithNotPossibleToDownloadArticle()
+    {
+        $requestDTO = new ArticleCreateKeyRequestDTO(articleId: 400);
+
+        $articleMock = $this->make(Journal_Article::class, [
+            'getPk' => Expected::once(function () {
+                return 1;
+            }),
+            'get' => Expected::once(function (string $articleGetKey) {
+                return true;
+            }),
+        ]);
+
+        $downloadProtectorServiceMock = $this->make(DownloadProtectService::class, [
+            'isDownloadPossible' => Expected::once(function (Journal_Article $article) {
+                return false;
+            }),
+        ]);
+
+        $JournalRepositoryMock = $this->make(journalRepository::class, [
+            'getArticle' => Expected::once(function (int $articleId) use ($articleMock) {
+                return $articleMock;
+            }),
+        ]);
+
+        $documentCryptServiceMock = $this->make(DocumentCryptService::class, [
+            'createKey' => Expected::never(),
+        ]);
+
+        $coverServiceMock = $this->make(CoverService::class, [
+            'makeJournalCover' => Expected::never(),
+            'makeBookCover' => Expected::never(),
+        ]);
+
+        $journalService = new JournalService(
+            journalRepository: $JournalRepositoryMock,
+            coverService: $coverServiceMock,
+            downloadProtectorService: $downloadProtectorServiceMock,
+            documentCryptService: $documentCryptServiceMock,
+        );
+        $responseDto = $journalService->createArticleKey($requestDTO);
+
+        $this->assertInstanceOf(ArticleCreateKeyResponseDTO::class, $responseDto);
+        $this->assertEquals([], $responseDto->getKey());
+        $this->assertEquals(new NotAvailableForDownloadError(), $responseDto->getStatus());
+        $this->assertEquals(true, $responseDto->getStatus()->isError());
+    }
+
+    // ->getArticleMeta() tests
+
+    public function testGetArticleMetaWithExistAndPossibleToDownloadArticle()
+    {
+        $requestDTO = new ArticleMetaRequestDTO(articleId: 1);
+        $expectedMeta = 'metadata';
+
+        $articleMock = $this->make(Journal_Article::class, [
+            'getPk' => Expected::once(function () {
+                return 1;
+            }),
+        ]);
+
+        $downloadProtectorServiceMock = $this->make(DownloadProtectService::class, [
+            'isDownloadPossible' => Expected::once(function (Journal_Article $article) {
+                return true;
+            }),
+        ]);
+
+        $JournalRepositoryMock = $this->make(journalRepository::class, [
+            'getArticle' => Expected::once(function (int $articleId) use ($articleMock) {
+                return $articleMock;
+            }),
+        ]);
+
+        $documentCryptServiceMock = $this->make(DocumentCryptService::class, [
+            'getMeta' => Expected::once(function (Journal_Article $article) use ($expectedMeta) {
+                return $expectedMeta;
+            }),
+        ]);
+
+        $coverServiceMock = $this->make(CoverService::class, [
+            'makeJournalCover' => Expected::never(),
+            'makeBookCover' => Expected::never(),
+        ]);
+
+        $journalService = new JournalService(
+            journalRepository: $JournalRepositoryMock,
+            coverService: $coverServiceMock,
+            downloadProtectorService: $downloadProtectorServiceMock,
+            documentCryptService: $documentCryptServiceMock,
+        );
+
+        $responseDto = $journalService->getArticleMeta($requestDTO);
+
+        $this->assertInstanceOf(ArticleMetaResponseDTO::class, $responseDto);
+        $this->assertEquals($expectedMeta, $responseDto->getMeta());
+        $this->assertEquals(new GenericSuccessResult(), $responseDto->getStatus());
+        $this->assertEquals(false, $responseDto->getStatus()->isError());
+    }
+
+    public function testGetArticleMetaWithNotFoundArticleError()
+    {
+        $requestDTO = new ArticleMetaRequestDTO(articleId: 1);
+
+        $downloadProtectorServiceMock = $this->make(DownloadProtectService::class, [
+            'isDownloadPossible' => Expected::never(),
+        ]);
+
+        $JournalRepositoryMock = $this->make(journalRepository::class, [
+            'getArticle' => Expected::once(function (int $articleId) {
+                return Journal_Article::create();
+            }),
+        ]);
+
+        $documentCryptServiceMock = $this->make(DocumentCryptService::class, [
+            'getMeta' => Expected::never(),
+        ]);
+
+        $coverServiceMock = $this->make(CoverService::class, [
+            'makeJournalCover' => Expected::never(),
+            'makeBookCover' => Expected::never(),
+        ]);
+
+        $journalService = new JournalService(
+            journalRepository: $JournalRepositoryMock,
+            coverService: $coverServiceMock,
+            downloadProtectorService: $downloadProtectorServiceMock,
+            documentCryptService: $documentCryptServiceMock,
+        );
+
+        $responseDto = $journalService->getArticleMeta($requestDTO);
+
+        $this->assertInstanceOf(ArticleMetaResponseDTO::class, $responseDto);
+        $this->assertEquals('', $responseDto->getMeta());
+        $this->assertEquals(new ResourceNotFoundError(), $responseDto->getStatus());
+        $this->assertEquals(true, $responseDto->getStatus()->isError());
+    }
+
+    public function testGetArticleMetaWithNotPossibleToDownloadArticle()
+    {
+        $requestDTO = new ArticleMetaRequestDTO(articleId: 1);
+
+        $articleMock = $this->make(Journal_Article::class, [
+            'getPk' => Expected::once(function () {
+                return 1;
+            }),
+        ]);
+
+
+        $downloadProtectorServiceMock = $this->make(DownloadProtectService::class, [
+            'isDownloadPossible' => Expected::once(function (Journal_Article $article) {
+                return false;
+            }),
+        ]);
+
+        $JournalRepositoryMock = $this->make(journalRepository::class, [
+            'getArticle' => Expected::once(function (int $articleId) use ($articleMock) {
+                return $articleMock;
+            }),
+        ]);
+
+        $documentCryptServiceMock = $this->make(DocumentCryptService::class, [
+            'getMeta' => Expected::never(),
+        ]);
+
+        $coverServiceMock = $this->make(CoverService::class, [
+            'makeJournalCover' => Expected::never(),
+            'makeBookCover' => Expected::never(),
+        ]);
+
+        $journalService = new JournalService(
+            journalRepository: $JournalRepositoryMock,
+            coverService: $coverServiceMock,
+            downloadProtectorService: $downloadProtectorServiceMock,
+            documentCryptService: $documentCryptServiceMock,
+        );
+
+        $responseDto = $journalService->getArticleMeta($requestDTO);
+
+        $this->assertInstanceOf(ArticleMetaResponseDTO::class, $responseDto);
+        $this->assertEquals('', $responseDto->getMeta());
+        $this->assertEquals(new NotAvailableForDownloadError(), $responseDto->getStatus());
+        $this->assertEquals(true, $responseDto->getStatus()->isError());
+    }
+
+    // ->getArticleDownloadFilePath() tests
+
+    public function testgetArticleDownloadFilePathWithPossibleToDownloadArticle()
+    {
+        foreach ($this->fileTypesClassnames as $fileTypeClassname) {
+            $requestDTO = new ArticleDownloadRequestDTO(articleId: 1);
+            $expectedFilePath = '/Article/1/pdf_path.pdf';
+
+            $downloadProtectorServiceMock = $this->make(DownloadProtectService::class, [
+                'isDownloadPossible' => Expected::once(function (Journal_Article $article) {
+                    return true;
+                }),
+            ]);
+
+            $JournalRepositoryMock = $this->make(journalRepository::class, [
+                'getArticle' => Expected::once(function (int $articleId) {
+                    return Journal_Article::create();
+                }),
+            ]);
+
+            $documentCryptServiceMock = $this->make(DocumentCryptService::class, [
+                'getEncryptedFilePath' => Expected::once(function (Journal_Article $article, FileTypeInterface $fileType) use ($expectedFilePath) {
+                    return $expectedFilePath;
+                }),
+            ]);
+
+            $coverServiceMock = $this->make(CoverService::class, [
+                'makeJournalCover' => Expected::never(),
+                'makeBookCover' => Expected::never(),
+            ]);
+
+            $journalService = new JournalService(
+                journalRepository: $JournalRepositoryMock,
+                coverService: $coverServiceMock,
+                downloadProtectorService: $downloadProtectorServiceMock,
+                documentCryptService: $documentCryptServiceMock,
+            );
+
+            $fileType = new $fileTypeClassname();
+            $responseDto = $journalService->getArticleDownloadFilePath($requestDTO, $fileType);
+
+            $this->assertInstanceOf(ArticleDownloadResponseDTO::class, $responseDto);
+            $this->assertEquals($expectedFilePath, $responseDto->getFilePath());
+            $this->assertEquals(new GenericSuccessResult(), $responseDto->getStatus());
+            $this->assertEquals(false, $responseDto->getStatus()->isError());
+        }
+    }
+
+    public function testgetArticleDownloadFilePathWithNotPossibleToDownloadArticle()
+    {
+        foreach ($this->fileTypesClassnames as $fileTypeClassname) {
+            $requestDTO = new ArticleDownloadRequestDTO(articleId: 99999);
+
+            $downloadProtectorServiceMock = $this->make(DownloadProtectService::class, [
+                'isDownloadPossible' => Expected::once(function (Journal_Article $article) {
+                    return false;
+                }),
+            ]);
+
+            $JournalRepositoryMock = $this->make(journalRepository::class, [
+                'getArticle' => Expected::once(function (int $articleId) {
+                    return Journal_Article::create();
+                }),
+            ]);
+
+            $documentCryptServiceMock = $this->make(DocumentCryptService::class, [
+                'getEncryptedFilePath' => Expected::never(),
+            ]);
+
+            $coverServiceMock = $this->make(CoverService::class, [
+                'makeJournalCover' => Expected::never(),
+                'makeBookCover' => Expected::never(),
+            ]);
+
+            $journalService = new JournalService(
+                journalRepository: $JournalRepositoryMock,
+                coverService: $coverServiceMock,
+                downloadProtectorService: $downloadProtectorServiceMock,
+                documentCryptService: $documentCryptServiceMock,
+            );
+
+            $fileType = new $fileTypeClassname();
+            $responseDto = $journalService->getArticleDownloadFilePath($requestDTO, $fileType);
+
+            $this->assertInstanceOf(ArticleDownloadResponseDTO::class, $responseDto);
+            $this->assertEquals('', $responseDto->getFilePath());
+            $this->assertEquals(new NotAvailableForDownloadError(), $responseDto->getStatus());
+            $this->assertEquals(true, $responseDto->getStatus()->isError());
+        }
+    }
+
+    public function testGetArticlesFromJournal()
+    {
+        $requestDTO = new ArticleListRequestDTO(journalIssueId: 292672);
+
+        $journalRepositoryMock = $this->make(JournalRepository::class, [
+            'getArticlesFromJournal' => Expected::once(function (ArticleListRequestDTO $requestDTO) {
+                $data = [];
+                for ($i = 1; $i <= 50; $i++) {
+                    $data[] = [
+                        "all_count" => 1,
+                        "available" => 1,
+                        "journal_pk" => 292672,
+                        "journal_name" => "Journal name",
+                        "access_date" => "2025-06-03 12:20:53",
+                        "pages" => "5-" . $i,
+                        "journalId" => 292672,
+                        "journalName" => "Journal name",
+                        "journal_issue_pk" => 292672,
+                        "issue" => "1",
+                        "year" => 2014,
+                        "publisher" => "Московский технологический институт",
+                        "id" => $i,
+                        "title" => "Test Journal Title " . $i,
+                        "author" => "Author " . $i,
+                        "start_page" => 5,
+                        "finish_page" => 16,
+                        "description" => "Test description " . $i,
+                        "expired_date" => "2025-06-05",
+                    ];
+                }
+
+                return $data;
+            }),
+        ]);
+
+        $expectedDTOs = [];
+        for ($i = 1; $i <= 50; $i++) {
+            $expectedDTOs[] = ArticleListResponseDTO::create(
+                id: $i,
+                available: true,
+                journalId: 292672,
+                year: 2014,
+                description: "Test description " . $i,
+                title: "Test Journal Title " . $i,
+                author: "Author " . $i,
+                pages: "5-" . $i,
+                accessDate: EbsCarbon::create("2025-06-03 12:20:53"),
+                allCount: 1,
+                journalPk: 292672,
+                journalName: "Journal name",
+                journalIssuePk: 292672,
+                issue: 1,
+                publisher: "Московский технологический институт",
+                startPage: 5,
+                finishPage: 16
+            );
+        }
+
+        $expectedServiceResult = new PaginatedArticleListResponseDTO($expectedDTOs);
+
+        $coverServiceMock = $this->make(CoverService::class, [
+            'makeJournalCover' => Expected::never(),
+            'makeBookCover' => Expected::never(),
+        ]);
+
+        $journalService = new JournalService(
+            journalRepository: $journalRepositoryMock,
+            coverService: $coverServiceMock,
+            downloadProtectorService: $this->make(DownloadProtectService::class),
+            documentCryptService: $this->make(DocumentCryptService::class),
+        );
+
+        $result = $journalService->getArticlesFromJournal($requestDTO);
+
+        $this->assertInstanceOf(PaginatedArticleListResponseDTO::class, $result);
+        $this->assertEquals($expectedServiceResult, $result);
+    }
+
+    public function testGetJournalsFromCatalog()
+    {
+        $requestDTO = new JournalListRequestDTO(
+            category: 917,
+            subCategory: 0,
+            publisher: 0,
+            limit: 20,
+            offset: 0,
+        );
+
+        $journalRepositoryMock = $this->make(JournalRepository::class, [
+            'getJournalsFromCatalog' => Expected::once(function (JournalListRequestDTO $requestDTO) {
+                return $this->make(QueryResult::class, [
+                    'getRows' => Expected::once(function () {
+                        $data = [];
+                        for ($i = 1; $i <= 50; $i++) {
+                            $data[] = [
+                                "all_count" => 1,
+                                "available" => 1,
+                                "id" => $i,
+                                "title" => "Test Journal Title " . $i,
+                                "publisher" => "Test Publisher " . $i,
+                            ];
+                        }
+
+                        return $data;
+                    }),
+                    'getFoundRows' => Expected::once(function () {
+                        return 50;
+                    }),
+                ]);
+            }),
+        ]);
+
+        $expectedDTOs = [];
+        for ($i = 1; $i <= 50; $i++) {
+            $expectedDTOs[] = JournalListResponseDTO::create(
+                id: $i,
+                title: "Test Journal Title " . $i,
+                available: true,
+                allCount: 1,
+                publisher: "Test Publisher " . $i,
+            );
+        }
+
+        $expectedServiceResult = new PaginatedJournalListResponseDTO(
+            dtoItems: $expectedDTOs,
+            count: 50
+        );
+
+        $coverServiceMock = $this->make(CoverService::class, [
+            'makeJournalCover' => Expected::never(),
+            'makeBookCover' => Expected::never(),
+        ]);
+
+        $journalService = new JournalService(
+            journalRepository: $journalRepositoryMock,
+            coverService: $coverServiceMock,
+            downloadProtectorService: $this->make(DownloadProtectService::class),
+            documentCryptService: $this->make(DocumentCryptService::class),
+        );
+        $result = $journalService->getJournalsFromCatalog($requestDTO);
+
+        $this->assertInstanceOf(PaginatedJournalListResponseDTO::class, $result);
+        $this->assertEquals($expectedServiceResult, $result);
+    }
+
+    public function testGetJournalIssuesOnExistJournal()
+    {
+        $requestDTO = new JournalIssueListRequestDTO(journalId: 123);
+        $repositoryReturnedRows = [
+            [
+                "id" => 2374,
+                "title" => "Cloud of science",
+                "issueperyear" => "4",
+                "issn" => "2409-031X",
+                "vac" => 0,
+                "edition" => "<ul><li>Главный редактор - Никульчев Е. В., д. т. н., профессор проректор, Московский технологический институт (Россия, Москва)</li></ul>",
+                "description" => "Журнал содержит результаты прикладных и фундаментальных научных исследований в области информационных технологий, моделирования систем, прикладных информационных технологий и других областей науки.",
+                "email" => null,
+                "publisher" => "Московский технологический институт",
+                "city" => "Москва",
+                "country" => "Россия",
+                "year" => 2013,
+                "publish_year" => 2014,
+                "available" => 1,
+                "items" => [
+                    [
+                        "name" => "1",
+                        "journal_issue_pk" => 292672
+                    ],
+                    [
+                        "name" => "2",
+                        "journal_issue_pk" => 292674
+                    ],
+                    [
+                        "name" => "3",
+                        "journal_issue_pk" => 292671
+                    ],
+                    [
+                        "name" => "4",
+                        "journal_issue_pk" => 292673
+                    ]
+                ]
+            ],
+            [
+                "id" => 2374,
+                "title" => "Cloud of science",
+                "issueperyear" => "4",
+                "issn" => "2409-031X",
+                "vac" => 0,
+                "edition" => "
+                                    <ul><li>Главный редактор - Никульчев Е. В., д. т. н., профессор проректор, Московский технологический институт (Россия, Москва)
+                                    <li>Андрейчикова О. Н., д. т. н., профессор в. н. с., Центральный экономико-математический институт РАН (Россия, Москва)
+                                    <li>Андрианов Д. Е., д. т. н., доцент зав. каф., Владимирский государственный </ul>
+                                ",
+                "description" => "Журнал содержит результаты прикладных и фундаментальных научных исследований в области информационных технологий, моделирования систем, прикладных информационны",
+                "email" => null,
+                "publisher" => "Московский технологический институт",
+                "city" => "Москва",
+                "country" => "Россия",
+                "year" => 2013,
+                "publish_year" => 2015,
+                "available" => 1,
+                "items" => [
+                    [
+                        "name" => "1",
+                        "journal_issue_pk" => 292672,
+                    ],
+                    [
+                        "name" => "2",
+                        "journal_issue_pk" => 292674,
+                    ],
+                    [
+                        "name" => "3",
+                        "journal_issue_pk" => 292671,
+                    ],
+                ],
+            ],
+        ];
+
+        $yearsWithIssuesDTOs = [];
+        foreach ($repositoryReturnedRows as $row) {
+            $issueDTOs = [];
+            foreach ($row['items'] as $issueItem) {
+                $issueDTOs[] = IssueDTO::create(
+                    id: $issueItem['journal_issue_pk'],
+                    title: $issueItem['name']
+                );
+            }
+
+            $yearsWithIssuesDTOs[] = YearWithIssuesDTO::create(
+                year: $row['publish_year'],
+                issueList: new PaginatedIssueListDTO($issueDTOs)
+            );
+        }
+
+        $journal = reset($repositoryReturnedRows);
+
+        $expectedDto = JournalIssueListResponseDTO::create(
+            id: $journal['id'],
+            edition: $journal['edition'],
+            description: $journal['description'],
+            title: $journal['title'],
+            publisher: $journal['publisher'],
+            available: $journal['available'],
+            issuePerYear: $journal['issueperyear'],
+            issn: $journal['issn'],
+            country: $journal['country'],
+            city: $journal['city'],
+            email: $journal['email'] ?: '',
+            year: $journal['year'],
+            inVac: $journal['vac'],
+            coverUrl: 'https://' . $_SERVER['HTTP_HOST'] . str_replace($_SERVER['DOCUMENT_ROOT'], '', '/coverpath/'),
+            yearsWithIssues: new PaginatedYearWithIssueListDTO($yearsWithIssuesDTOs),
+        );
+
+        $downloadProtectorServiceMock = $this->make(DownloadProtectService::class, [
+            'isDownloadPossible' => Expected::never(),
+        ]);
+
+        $JournalRepositoryMock = $this->make(journalRepository::class, [
+            'getArticle' => Expected::never(),
+            'getJournalIssueCoverId' => Expected::once(function (int $journalId) {
+                return [];
+            }),
+            'getJournalWithIssues' => Expected::once(function (int $journalId) use ($repositoryReturnedRows){
+                return $repositoryReturnedRows;
+            }),
+        ]);
+
+        $documentCryptServiceMock = $this->make(DocumentCryptService::class, [
+            'getEncryptedFilePath' => Expected::never(),
+        ]);
+
+        $coverServiceMock = $this->make(CoverService::class, [
+            'makeJournalCover' => Expected::once(function (int $id, string $title, string $publisher) {
+                return '/coverpath/';
+            }),
+            'makeBookCover' => Expected::never(),
+        ]);
+
+        $journalService = new JournalService(
+            journalRepository: $JournalRepositoryMock,
+            coverService: $coverServiceMock,
+            downloadProtectorService: $downloadProtectorServiceMock,
+            documentCryptService: $documentCryptServiceMock,
+        );
+
+        $responseDto = $journalService->getJournalIssues($requestDTO);
+
+        $this->assertInstanceOf(JournalIssueListResponseDTO::class, $responseDto);
+        $this->assertEquals($expectedDto, $responseDto);
+        $this->assertFalse($responseDto->isEmpty());
+    }
+
+    public function testGetJournalIssuesOnNonExistJournal()
+    {
+        $requestDTO = new JournalIssueListRequestDTO(journalId: 999999999);
+
+        $downloadProtectorServiceMock = $this->make(DownloadProtectService::class, [
+            'isDownloadPossible' => Expected::never(),
+        ]);
+
+        $JournalRepositoryMock = $this->make(journalRepository::class, [
+            'getArticle' => Expected::never(),
+            'getJournalIssueCoverId' => Expected::never(),
+            'getJournalWithIssues' => Expected::once(function (int $journalId){
+                return [];
+            }),
+        ]);
+
+        $documentCryptServiceMock = $this->make(DocumentCryptService::class, [
+            'getEncryptedFilePath' => Expected::never(),
+        ]);
+
+        $coverServiceMock = $this->make(CoverService::class, [
+            'makeJournalCover' => Expected::never(),
+            'makeBookCover' => Expected::never(),
+        ]);
+
+        $journalService = new JournalService(
+            journalRepository: $JournalRepositoryMock,
+            coverService: $coverServiceMock,
+            downloadProtectorService: $downloadProtectorServiceMock,
+            documentCryptService: $documentCryptServiceMock,
+        );
+
+        $responseDto = $journalService->getJournalIssues($requestDTO);
+
+        $this->assertInstanceOf(JournalIssueListResponseDTO::class, $responseDto);
+        $this->assertEquals(JournalIssueListResponseDTO::create(), $responseDto);
+        $this->assertTrue($responseDto->isEmpty());
+    }
+}

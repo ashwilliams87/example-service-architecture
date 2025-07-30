@@ -1,0 +1,219 @@
+<?php
+
+namespace Lan\Services;
+
+use Lan\DataTypes\Contracts\FileTypes\FileTypeInterface;
+use Lan\DataTypes\EbsCarbon;
+use Lan\DataTypes\Http\RequestResult\Error\NoAccessToResourceError;
+use Lan\DataTypes\Http\RequestResult\Error\NotAvailableForDownloadError;
+use Lan\DataTypes\Http\RequestResult\Error\ResourceNotFoundError;
+use Lan\DataTypes\Http\RequestResult\Success\GenericSuccessResult;
+use Lan\DTOs\Book\Responses\JournalListResponseDTO;
+use Lan\DTOs\Book\Responses\PaginatedJournalListResponseDTO;
+use Lan\DTOs\Journal\Requests\ArticleCreateKeyRequestDTO;
+use Lan\DTOs\Journal\Requests\ArticleDownloadRequestDTO;
+use Lan\DTOs\Journal\Requests\ArticleListRequestDTO;
+use Lan\DTOs\Journal\Requests\ArticleMetaRequestDTO;
+use Lan\DTOs\Journal\Requests\JournalIssueListRequestDTO;
+use Lan\DTOs\Journal\Requests\JournalListRequestDTO;
+use Lan\DTOs\Journal\Responses\ArticleCreateKeyResponseDTO;
+use Lan\DTOs\Journal\Responses\ArticleDownloadResponseDTO;
+use Lan\DTOs\Journal\Responses\ArticleListResponseDTO;
+use Lan\DTOs\Journal\Responses\ArticleMetaResponseDTO;
+use Lan\DTOs\Journal\Responses\JournalIssueList\IssueDTO;
+use Lan\DTOs\Journal\Responses\JournalIssueList\JournalIssueListResponseDTO;
+use Lan\DTOs\Journal\Responses\JournalIssueList\PaginatedIssueListDTO;
+use Lan\DTOs\Journal\Responses\JournalIssueList\PaginatedYearWithIssueListDTO;
+use Lan\DTOs\Journal\Responses\JournalIssueList\YearWithIssuesDTO;
+use Lan\DTOs\Journal\Responses\PaginatedArticleListResponseDTO;
+use Lan\Repositories\Contracts\JournalRepositoryInterface;
+use Lan\Services\Contracts\CoverServiceInterface;
+use Lan\Services\Contracts\JournalServiceInterface;
+use Lan\Services\Contracts\Security\DocumentCryptServiceInterface;
+use Lan\Services\Contracts\Security\DownloadProtectorServiceInterface;
+
+class JournalService implements JournalServiceInterface
+{
+    public function __construct(
+        private JournalRepositoryInterface        $journalRepository,
+        private CoverServiceInterface             $coverService,
+        private DownloadProtectorServiceInterface $downloadProtectorService,
+        private DocumentCryptServiceInterface     $documentCryptService,
+    )
+    {
+
+    }
+
+    public function getJournalsFromCatalog(JournalListRequestDTO $requestDTO): PaginatedJournalListResponseDTO
+    {
+        $queryResult = $this->journalRepository->getJournalsFromCatalog($requestDTO);
+        $journalDTOs = [];
+        foreach ($queryResult->getRows() as $row){
+            $journalDTOs[] = JournalListResponseDTO::create(
+                id: $row['id'],
+                title: (string) $row['title'],
+                available:  (bool) $row['available'],
+                allCount: (int) $row['all_count'],
+                publisher: (string) $row['publisher'],
+            );
+        }
+
+        return new PaginatedJournalListResponseDTO(
+            dtoItems: $journalDTOs,
+            count: $queryResult->getFoundRows(),
+        );
+    }
+
+    public function getArticlesFromJournal(ArticleListRequestDTO $requestDTO): PaginatedArticleListResponseDTO
+    {
+        $rows = $this->journalRepository->getArticlesFromJournal($requestDTO);
+
+        $articleDTOs = [];
+        foreach ($rows as $row) {
+            $articleDTOs[] = ArticleListResponseDTO::create(
+                id: $row['id'],
+                available: $row['available'],
+                journalId: $row['journalId'],
+                year: $row['year'],
+                description: $row['description'],
+                title: (string) $row['title'],
+                author: (string) $row['author'],
+                pages: $row['pages'],
+                accessDate: EbsCarbon::parse($row['access_date']) ?: EbsCarbon::create(),
+                allCount: $row['all_count'],
+                journalPk: $row['journal_pk'],
+                journalName: $row['journal_name'],
+                journalIssuePk: $row['journal_issue_pk'],
+                issue: $row['issue'],
+                publisher: $row['publisher'],
+                startPage: $row['start_page'],
+                finishPage: $row['finish_page'],
+            );
+        }
+
+        return new PaginatedArticleListResponseDTO($articleDTOs);
+    }
+
+    public function getJournalIssues(JournalIssueListRequestDTO $requestDTO): JournalIssueListResponseDTO
+    {
+        $rows = $this->journalRepository->getJournalWithIssues($requestDTO->getJournalId());
+        $journal = reset($rows);
+        if(!$journal){
+            return JournalIssueListResponseDTO::create();
+        }
+
+        $journalIssueCover = $this->journalRepository->getJournalIssueCoverId($requestDTO->getJournalId());
+
+        if ($journalIssueCover) {
+            $journal['cover'] = EBS_DOMAIN . '/img/cover/journal/issue/' . $journalIssueCover['journal_issue_pk'] . '.jpg';
+        } else {
+            $coverPath = $this->coverService->makeJournalCover(
+                id: $requestDTO->getJournalId(),
+                title: $journal['title'],
+                publisher: $journal['publisher']
+            );
+
+            $journal['cover'] = 'https://' . $_SERVER['HTTP_HOST'] . str_replace($_SERVER['DOCUMENT_ROOT'], '', $coverPath);
+        }
+
+        $yearsWithIssuesDTOs = [];
+        foreach ($rows as $row) {
+            $issueDTOs = [];
+            foreach ($row['items'] as $issueItem) {
+                $issueDTOs[] = IssueDTO::create(
+                    id: $issueItem['journal_issue_pk'],
+                    title: $issueItem['name']
+                );
+            }
+
+            $yearsWithIssuesDTOs[] = YearWithIssuesDTO::create(
+                year: $row['publish_year'],
+                issueList: new PaginatedIssueListDTO($issueDTOs)
+            );
+        }
+
+        return JournalIssueListResponseDTO::create(
+            id: $journal['id'],
+            edition: $journal['edition'],
+            description: $journal['description'],
+            title: $journal['title'],
+            publisher: $journal['publisher'],
+            available: $journal['available'],
+            issuePerYear: $journal['issueperyear'],
+            issn: $journal['issn'],
+            country: $journal['country'],
+            city: $journal['city'],
+            email: $journal['email'] ?: '',
+            year: $journal['year'],
+            inVac: $journal['vac'],
+            coverUrl: $journal['cover'],
+            yearsWithIssues: new PaginatedYearWithIssueListDTO($yearsWithIssuesDTOs),
+        );
+    }
+
+    public function createArticleKey(ArticleCreateKeyRequestDTO $requestDTO): ArticleCreateKeyResponseDTO
+    {
+        $book = $this->journalRepository->getArticle($requestDTO->getArticleId());
+
+        if (!$book->getPk()) {
+            return ArticleCreateKeyResponseDTO::create(status: new ResourceNotFoundError());
+        }
+
+        if (!$book->get('available')) {
+            return ArticleCreateKeyResponseDTO::create(status: new NoAccessToResourceError());
+        }
+
+        if (!$this->downloadProtectorService->isDownloadPossible($book)) {
+            return ArticleCreateKeyResponseDTO::create(status: new NotAvailableForDownloadError());
+        }
+
+        return ArticleCreateKeyResponseDTO::create(
+            key: $this->documentCryptService->createKey($book),
+            status: new GenericSuccessResult()
+        );
+    }
+
+    public function getArticleMeta(ArticleMetaRequestDTO $requestDTO): ArticleMetaResponseDTO
+    {
+        $article = $this->journalRepository->getArticle($requestDTO->getArticleId());
+
+        // todo:         Log::journalArticleRead($document, $security);
+
+        if (!$article->getPk()) {
+            return ArticleMetaResponseDTO::create(status: new ResourceNotFoundError());
+        }
+
+        if (!$this->downloadProtectorService->isDownloadPossible($article)) {
+            return ArticleMetaResponseDTO::create(status: new NotAvailableForDownloadError());
+        }
+
+        return ArticleMetaResponseDTO::create(
+            meta: $this->documentCryptService->getMeta($article),
+            status: new GenericSuccessResult()
+        );
+    }
+
+    public function getArticleDownloadFilePath(
+        ArticleDownloadRequestDTO $requestDTO,
+        FileTypeInterface         $fileType,
+    ): ArticleDownloadResponseDTO
+    {
+        $article = $this->journalRepository->getArticle($requestDTO->getArticleId());
+
+        // todo:         Log::journalArticleRead($document, $security);
+
+        // В логике api-phalcon не было проверки на Not found. Пока не стал реализовывать, но имеет смысл в будущем реализовать
+//        if(!$article->getPk()){
+//            return BookMetaResponseDTO::create(status: new ResourceNotFoundError());
+//        }
+
+        if (!$this->downloadProtectorService->isDownloadPossible($article)) {
+            return ArticleDownloadResponseDTO::create(status: new NotAvailableForDownloadError());
+        }
+
+        return ArticleDownloadResponseDTO::create(
+            filePath: $this->documentCryptService->getEncryptedFilePath($article, $fileType),
+            status: new GenericSuccessResult()
+        );
+    }
+}

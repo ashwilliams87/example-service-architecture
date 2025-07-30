@@ -1,0 +1,3 @@
+<?php //Symfony%255CComponent%255CValidator%255CConstraintViolationListInterface%2523set
+
+return [PHP_INT_MAX, []];

@@ -1,0 +1,13 @@
+[06:53:41 1724136821.2269] 
+ Ice\Exception\Error: Redefinition of parameter $id [peak: 36 MB]  
+ /var/www/html/api-laravel/Lan/DTOs/Book/Responses/BookListResponseDTO.php:13  
+ 
+#0 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:276  
+	Ice\Core\Logger->createException('Redefinition of...', '/var/www/html/a...', 13, NULL, Array, 64) 
+#1 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:247  
+	Ice\Core\Logger->error('Redefinition of...', '/var/www/html/a...', 13, NULL, Array, 64) 
+#2 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:197  
+	Ice\Core\Logger::errorHandler:64, 'Redefinition of...', '/var/www/html/a...', 13, Array) 
+#3 [internal function]: Ice\Core\Logger::shutdownHandler() 
+#4 {main} 
+ 

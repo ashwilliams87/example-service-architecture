@@ -1,0 +1,13 @@
+[08:16:16 1724660176.6797] 
+ Ice\Exception\Error: Class Lan\DTOs\Book\Responses\BookCardListResponseDTO contains 1 abstract method and must therefore be declared abstract or implement the remaining methods (Lan\DTOs\Collection\ListDTO::getItemClass) [peak: 36 MB]  
+ /var/www/html/api-laravel/Lan/DTOs/Book/Responses/BookCardListResponseDTO.php:10  
+ 
+#0 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:276  
+	Ice\Core\Logger->createException('Class Lan\\DTOs\\...', '/var/www/html/a...', 10, NULL, Array, 1) 
+#1 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:247  
+	Ice\Core\Logger->error('Class Lan\\DTOs\\...', '/var/www/html/a...', 10, NULL, Array, 1) 
+#2 /var/www/html/api-laravel/vendor/lan/ice-fork/source/Ice/Core/Logger.php:197  
+	Ice\Core\Logger::errorHandler:1, 'Class Lan\\DTOs\\...', '/var/www/html/a...', 10, Array) 
+#3 [internal function]: Ice\Core\Logger::shutdownHandler() 
+#4 {main} 
+ 
